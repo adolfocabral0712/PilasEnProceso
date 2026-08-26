@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
 
-  "name": "pilas-en-proceso",
+  "name": "pilasenproceso",
 
   "main": "src/index.js",
 
