@@ -349,6 +349,10 @@
       background: linear-gradient(90deg, #4ca875, #26734f);
     }
 
+    .barra.roja > span {
+      background: linear-gradient(90deg, #df6565, #a93636);
+    }
+
     .estado {
       display: inline-flex;
       align-items: center;
@@ -364,15 +368,15 @@
     }
 
     .estado.cargar {
-      border-color: #ebca90;
-      background: var(--ambar-fondo);
-      color: var(--ambar);
+      border-color: #add5bd;
+      background: var(--verde-100);
+      color: var(--verde-700);
     }
 
     .estado.terminada {
-      border-color: #b9d1e3;
-      background: var(--azul-fondo);
-      color: var(--azul);
+      border-color: #e5aaaa;
+      background: var(--rojo-fondo);
+      color: var(--rojo);
     }
 
     .estado.sin-calculo {
@@ -649,11 +653,11 @@
               <th>Predio</th>
               <th style="text-align:center">Pila</th>
               <th>Producto / Cosecha</th>
+              <th>Estado</th>
               <th style="text-align:right">M³ × 1,15</th>
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
-              <th>Estado</th>
             </tr>
           </thead>
           <tbody id="cuerpoTabla">
@@ -795,6 +799,12 @@
         : "cargar";
     }
 
+    function claseBarra(registro) {
+      return obtenerEstado(registro) === ESTADO_TERMINADA
+        ? "barra roja"
+        : "barra";
+    }
+
     function textoEstado(registro) {
       if (registro.remitos_estimados === null || registro.remitos_estimados === undefined) {
         return "SIN CÁLCULO";
@@ -807,6 +817,12 @@
 
     function ordenarRegistros(lista) {
       return [...lista].sort((a, b) => {
+        const predioA = normalizar(a.predio);
+        const predioB = normalizar(b.predio);
+
+        const comparacionPredio = predioA.localeCompare(predioB, "es");
+        if (comparacionPredio !== 0) return comparacionPredio;
+
         const fechaA = a.ultima_fecha
           ? new Date(`${String(a.ultima_fecha).slice(0, 10)}T00:00:00`).getTime()
           : 0;
@@ -818,12 +834,6 @@
         if (fechaA !== fechaB) {
           return fechaB - fechaA;
         }
-
-        const predioA = normalizar(a.predio);
-        const predioB = normalizar(b.predio);
-
-        const comparacionPredio = predioA.localeCompare(predioB, "es");
-        if (comparacionPredio !== 0) return comparacionPredio;
 
         return Number(a.pila ?? 0) - Number(b.pila ?? 0);
       });
@@ -910,6 +920,11 @@
             ${escapar(registro.producto || "—")}
             <span class="cosecha">${escapar(registro.cosecha || "Sin cosecha")}</span>
           </td>
+          <td>
+            <span class="estado ${claseEstado(registro)}">
+              ${textoEstado(registro)}
+            </span>
+          </td>
           <td class="numero">${numero(obtenerM3Ajustado(registro), 2)}</td>
           <td class="avance-celda">
             <div class="avance-cabecera">
@@ -918,17 +933,12 @@
               </span>
               <span class="avance-porcentaje">${avance}%</span>
             </div>
-            <div class="barra" aria-label="Avance ${avance}%">
+            <div class="${claseBarra(registro)}" aria-label="Avance ${avance}%">
               <span style="width:${avance}%"></span>
             </div>
           </td>
           <td>${fecha(registro.primera_fecha)}</td>
           <td>${fecha(registro.ultima_fecha)}</td>
-          <td>
-            <span class="estado ${claseEstado(registro)}">
-              ${textoEstado(registro)}
-            </span>
-          </td>
         </tr>
       `;
     }
@@ -971,7 +981,7 @@
               <span class="avance-valores">Avance estimado</span>
               <span class="avance-porcentaje">${avance}%</span>
             </div>
-            <div class="barra"><span style="width:${avance}%"></span></div>
+            <div class="${claseBarra(registro)}"><span style="width:${avance}%"></span></div>
           </div>
 
           <div class="tarjeta-fechas">
