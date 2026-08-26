@@ -14,11 +14,16 @@
       --verde-700: #286c4c;
       --verde-600: #33865f;
       --verde-100: #e5f2e9;
+      --verde-50: #f3f7f1;
       --texto: #17231c;
       --texto-suave: #68766d;
       --borde: #dce2d8;
       --blanco: #ffffff;
       --fondo: #f3f5f0;
+      --ambar: #9a5c00;
+      --ambar-fondo: #fff2d6;
+      --azul: #245d8a;
+      --azul-fondo: #e7f0f8;
       --rojo: #a93636;
       --rojo-fondo: #fff0f0;
       --sombra: 0 8px 30px rgba(30, 60, 42, 0.07);
@@ -43,11 +48,7 @@
 
     .cabecera {
       background:
-        radial-gradient(
-          circle at 90% -100%,
-          rgba(125, 205, 160, 0.3),
-          transparent 45%
-        ),
+        radial-gradient(circle at 90% -100%, rgba(125, 205, 160, 0.3), transparent 45%),
         var(--verde-900);
       color: var(--blanco);
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
@@ -124,7 +125,7 @@
 
     .kpis {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
       margin-bottom: 18px;
     }
@@ -150,21 +151,10 @@
       background: var(--kpi-color, var(--verde-600));
     }
 
-    .kpi.verde {
-      --kpi-color: #3a8c63;
-    }
-
-    .kpi.ambar {
-      --kpi-color: #d99228;
-    }
-
-    .kpi.azul {
-      --kpi-color: #4d87b4;
-    }
-
-    .kpi.oscuro {
-      --kpi-color: var(--verde-900);
-    }
+    .kpi.verde { --kpi-color: #3a8c63; }
+    .kpi.ambar { --kpi-color: #d99228; }
+    .kpi.azul { --kpi-color: #4d87b4; }
+    .kpi.oscuro { --kpi-color: var(--verde-900); }
 
     .kpi-etiqueta {
       margin-bottom: 11px;
@@ -600,10 +590,7 @@
         <p class="sobre-titulo">Control operativo</p>
         <h1>Estado de Pilas en Proceso</h1>
       </div>
-
-      <div class="actualizado" id="actualizado">
-        Cargando actualización…
-      </div>
+      <div class="actualizado" id="actualizado">Cargando actualización…</div>
     </div>
   </header>
 
@@ -620,30 +607,15 @@
       <article class="kpi ambar">
         <div class="kpi-etiqueta">Pueden por cargar</div>
         <div class="kpi-valor" id="kpiPorCargar">0</div>
-        <div class="kpi-detalle">
-          Aún debajo de la estimación
-        </div>
+        <div class="kpi-detalle">Aún debajo de la estimación</div>
       </article>
 
       <article class="kpi azul">
         <div class="kpi-etiqueta">Quizás terminadas</div>
         <div class="kpi-valor" id="kpiTerminadas">0</div>
-        <div class="kpi-detalle">
-          Alcanzaron la estimación
-        </div>
+        <div class="kpi-detalle">Alcanzaron la estimación</div>
       </article>
 
-      <article class="kpi oscuro">
-        <div class="kpi-etiqueta">
-          Salidos / A cargar
-        </div>
-        <div class="kpi-valor" id="kpiRemitos">
-          0 / 0
-        </div>
-        <div class="kpi-detalle">
-          Remitos reales y estimados
-        </div>
-      </article>
     </section>
 
     <section class="panel">
@@ -658,32 +630,14 @@
           >
         </div>
 
-        <select
-          id="filtroEstado"
-          class="control"
-          aria-label="Filtrar por estado"
-        >
-          <option value="TODOS">
-            Todos los estados
-          </option>
-
-          <option value="PUEDE POR CARGAR">
-            Puede por cargar
-          </option>
-
-          <option value="QUIZAS TERMINADA">
-            Quizás terminada
-          </option>
+        <select id="filtroEstado" class="control" aria-label="Filtrar por estado">
+          <option value="TODOS">Todos los estados</option>
+          <option value="PUEDE POR CARGAR">Puede por cargar</option>
+          <option value="QUIZAS TERMINADA">Quizás terminada</option>
         </select>
 
-        <select
-          id="filtroPredio"
-          class="control"
-          aria-label="Filtrar por predio"
-        >
-          <option value="TODOS">
-            Todos los predios
-          </option>
+        <select id="filtroPredio" class="control" aria-label="Filtrar por predio">
+          <option value="TODOS">Todos los predios</option>
         </select>
       </div>
 
@@ -695,32 +649,20 @@
               <th style="text-align:center">Pila</th>
               <th>Producto / Cosecha</th>
               <th>Estado</th>
-              <th style="text-align:right">
-                M³ × 1,15
-              </th>
+              <th style="text-align:right">M³ × 1,15</th>
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
             </tr>
           </thead>
-
           <tbody id="cuerpoTabla">
-            <tr>
-              <td colspan="8" class="cargando">
-                Cargando información de pilas…
-              </td>
-            </tr>
+            <tr><td colspan="8" class="cargando">Cargando información de pilas…</td></tr>
           </tbody>
         </table>
       </div>
 
-      <div
-        class="tarjetas-movil"
-        id="tarjetasMovil"
-      >
-        <div class="cargando">
-          Cargando información de pilas…
-        </div>
+      <div class="tarjetas-movil" id="tarjetasMovil">
+        <div class="cargando">Cargando información de pilas…</div>
       </div>
 
       <footer class="pie-tabla">
@@ -735,50 +677,23 @@
 
     const JSON_URL = "/api/pilas";
 
-    const ESTADO_CARGAR =
-      "PUEDE POR CARGAR";
-
-    const ESTADO_TERMINADA =
-      "QUIZAS TERMINADA";
+    const ESTADO_CARGAR = "PUEDE POR CARGAR";
+    const ESTADO_TERMINADA = "QUIZAS TERMINADA";
 
     let registros = [];
 
     const elementos = {
-      actualizado:
-        document.getElementById("actualizado"),
-
-      mensajeError:
-        document.getElementById("mensajeError"),
-
-      kpiTotal:
-        document.getElementById("kpiTotal"),
-
-      kpiPorCargar:
-        document.getElementById("kpiPorCargar"),
-
-      kpiTerminadas:
-        document.getElementById("kpiTerminadas"),
-
-      kpiRemitos:
-        document.getElementById("kpiRemitos"),
-
-      buscar:
-        document.getElementById("buscar"),
-
-      filtroEstado:
-        document.getElementById("filtroEstado"),
-
-      filtroPredio:
-        document.getElementById("filtroPredio"),
-
-      cuerpoTabla:
-        document.getElementById("cuerpoTabla"),
-
-      tarjetasMovil:
-        document.getElementById("tarjetasMovil"),
-
-      cantidadVisible:
-        document.getElementById("cantidadVisible")
+      actualizado: document.getElementById("actualizado"),
+      mensajeError: document.getElementById("mensajeError"),
+      kpiTotal: document.getElementById("kpiTotal"),
+      kpiPorCargar: document.getElementById("kpiPorCargar"),
+      kpiTerminadas: document.getElementById("kpiTerminadas"),
+      buscar: document.getElementById("buscar"),
+      filtroEstado: document.getElementById("filtroEstado"),
+      filtroPredio: document.getElementById("filtroPredio"),
+      cuerpoTabla: document.getElementById("cuerpoTabla"),
+      tarjetasMovil: document.getElementById("tarjetasMovil"),
+      cantidadVisible: document.getElementById("cantidadVisible")
     };
 
     function escapar(valor) {
@@ -791,118 +706,68 @@
     }
 
     function numero(valor, decimales = 0) {
-      if (
-        valor === null
-        || valor === undefined
-        || valor === ""
-        || Number.isNaN(Number(valor))
-      ) {
+      if (valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))) {
         return "—";
       }
 
-      return new Intl.NumberFormat(
-        "es-UY",
-        {
-          minimumFractionDigits: decimales,
-          maximumFractionDigits: decimales
-        }
-      ).format(Number(valor));
+      return new Intl.NumberFormat("es-UY", {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales
+      }).format(Number(valor));
     }
 
     function fecha(valor) {
-      if (!valor) {
-        return "—";
-      }
+      if (!valor) return "—";
 
-      const texto =
-        String(valor).slice(0, 10);
-
-      const partes =
-        texto.split("-");
+      const texto = String(valor).slice(0, 10);
+      const partes = texto.split("-");
 
       if (partes.length === 3) {
-        return (
-          `${partes[2]}/`
-          + `${partes[1]}/`
-          + `${partes[0]}`
-        );
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
       }
 
       return escapar(valor);
     }
 
     function fechaHora(valor) {
-      if (!valor) {
-        return "Sin fecha de actualización";
-      }
+      if (!valor) return "Sin fecha de actualización";
 
-      const objetoFecha =
-        new Date(valor);
+      const objetoFecha = new Date(valor);
 
-      if (
-        Number.isNaN(
-          objetoFecha.getTime()
-        )
-      ) {
+      if (Number.isNaN(objetoFecha.getTime())) {
         return escapar(valor);
       }
 
-      return new Intl.DateTimeFormat(
-        "es-UY",
-        {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-          timeZone: "America/Montevideo"
-        }
-      ).format(objetoFecha);
+      return new Intl.DateTimeFormat("es-UY", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "America/Montevideo"
+      }).format(objetoFecha);
     }
 
     function normalizar(valor) {
       return String(valor ?? "")
         .normalize("NFD")
-        .replace(
-          /[\u0300-\u036f]/g,
-          ""
-        )
+        .replace(/[\u0300-\u036f]/g, "")
         .trim()
         .toUpperCase();
     }
 
     function obtenerEstado(registro) {
-      return normalizar(
-        registro.estado_pila
-      );
+      return normalizar(registro.estado_pila);
     }
 
     function obtenerAvance(registro) {
-      const salidos = Number(
-        registro.remitos_ingresados ?? 0
-      );
+      const salidos = Number(registro.remitos_ingresados ?? 0);
+      const estimados = Number(registro.remitos_estimados ?? 0);
 
-      const estimados = Number(
-        registro.remitos_estimados ?? 0
-      );
+      if (!estimados || estimados <= 0) return 0;
 
-      if (
-        !estimados
-        || estimados <= 0
-      ) {
-        return 0;
-      }
-
-      return Math.min(
-        100,
-        Math.max(
-          0,
-          Math.round(
-            (salidos / estimados) * 100
-          )
-        )
-      );
+      return Math.min(100, Math.max(0, Math.round((salidos / estimados) * 100)));
     }
 
     function obtenerM3Ajustado(registro) {
@@ -910,674 +775,271 @@
         registro.m3_calc === null
         || registro.m3_calc === undefined
         || registro.m3_calc === ""
-        || Number.isNaN(
-          Number(registro.m3_calc)
-        )
+        || Number.isNaN(Number(registro.m3_calc))
       ) {
         return null;
       }
 
-      return (
-        Number(registro.m3_calc)
-        * 1.15
-      );
+      return Number(registro.m3_calc) * 1.15;
     }
 
     function claseEstado(registro) {
-      if (
-        registro.remitos_estimados
-          === null
-        || registro.remitos_estimados
-          === undefined
-      ) {
+      if (registro.remitos_estimados === null || registro.remitos_estimados === undefined) {
         return "sin-calculo";
       }
 
-      return (
-        obtenerEstado(registro)
-          === ESTADO_TERMINADA
-      )
+      return obtenerEstado(registro) === ESTADO_TERMINADA
         ? "terminada"
         : "cargar";
     }
 
     function claseBarra(registro) {
-      return (
-        obtenerEstado(registro)
-          === ESTADO_TERMINADA
-      )
+      return obtenerEstado(registro) === ESTADO_TERMINADA
         ? "barra roja"
         : "barra";
     }
 
     function textoEstado(registro) {
-      if (
-        registro.remitos_estimados
-          === null
-        || registro.remitos_estimados
-          === undefined
-      ) {
+      if (registro.remitos_estimados === null || registro.remitos_estimados === undefined) {
         return "SIN CÁLCULO";
       }
 
-      return (
-        obtenerEstado(registro)
-          === ESTADO_TERMINADA
-      )
+      return obtenerEstado(registro) === ESTADO_TERMINADA
         ? "QUIZÁS TERMINADA"
         : "PUEDE POR CARGAR";
     }
 
     function ordenarRegistros(lista) {
-      return [...lista].sort(
-        (a, b) => {
-          const predioA =
-            normalizar(a.predio);
+      return [...lista].sort((a, b) => {
+        const predioA = normalizar(a.predio);
+        const predioB = normalizar(b.predio);
 
-          const predioB =
-            normalizar(b.predio);
+        const comparacionPredio = predioA.localeCompare(predioB, "es");
+        if (comparacionPredio !== 0) return comparacionPredio;
 
-          const comparacionPredio =
-            predioA.localeCompare(
-              predioB,
-              "es"
-            );
+        const fechaA = a.ultima_fecha
+          ? new Date(`${String(a.ultima_fecha).slice(0, 10)}T00:00:00`).getTime()
+          : 0;
 
-          if (
-            comparacionPredio !== 0
-          ) {
-            return comparacionPredio;
-          }
+        const fechaB = b.ultima_fecha
+          ? new Date(`${String(b.ultima_fecha).slice(0, 10)}T00:00:00`).getTime()
+          : 0;
 
-          const fechaA =
-            a.ultima_fecha
-              ? new Date(
-                  `${String(
-                    a.ultima_fecha
-                  ).slice(
-                    0,
-                    10
-                  )}T00:00:00`
-                ).getTime()
-              : 0;
-
-          const fechaB =
-            b.ultima_fecha
-              ? new Date(
-                  `${String(
-                    b.ultima_fecha
-                  ).slice(
-                    0,
-                    10
-                  )}T00:00:00`
-                ).getTime()
-              : 0;
-
-          if (fechaA !== fechaB) {
-            return fechaB - fechaA;
-          }
-
-          return (
-            Number(a.pila ?? 0)
-            - Number(b.pila ?? 0)
-          );
+        if (fechaA !== fechaB) {
+          return fechaB - fechaA;
         }
-      );
+
+        return Number(a.pila ?? 0) - Number(b.pila ?? 0);
+      });
     }
 
     function actualizarResumen() {
       const total = registros.length;
 
-      const porCargar =
-        registros.filter(
-          registro =>
-            obtenerEstado(registro)
-              === ESTADO_CARGAR
-        ).length;
+      const porCargar = registros.filter(
+        registro => obtenerEstado(registro) === ESTADO_CARGAR
+      ).length;
 
-      const terminadas =
-        registros.filter(
-          registro =>
-            obtenerEstado(registro)
-              === ESTADO_TERMINADA
-        ).length;
+      const terminadas = registros.filter(
+        registro => obtenerEstado(registro) === ESTADO_TERMINADA
+      ).length;
 
-      const remitosIngresados =
-        registros.reduce(
-          (suma, registro) =>
-            suma
-            + Number(
-              registro
-                .remitos_ingresados
-                ?? 0
-            ),
-          0
-        );
-
-      const remitosEstimados =
-        registros.reduce(
-          (suma, registro) =>
-            suma
-            + Number(
-              registro
-                .remitos_estimados
-                ?? 0
-            ),
-          0
-        );
-
-      elementos.kpiTotal.textContent =
-        numero(total);
-
-      elementos.kpiPorCargar.textContent =
-        numero(porCargar);
-
-      elementos.kpiTerminadas.textContent =
-        numero(terminadas);
-
-      elementos.kpiRemitos.textContent =
-        `${numero(remitosIngresados)}`
-        + " / "
-        + `${numero(remitosEstimados)}`;
+      elementos.kpiTotal.textContent = numero(total);
+      elementos.kpiPorCargar.textContent = numero(porCargar);
+      elementos.kpiTerminadas.textContent = numero(terminadas);
     }
 
     function cargarFiltroPredios() {
-      const predios = [
-        ...new Set(
-          registros
-            .map(
-              registro =>
-                String(
-                  registro.predio ?? ""
-                ).trim()
-            )
-            .filter(Boolean)
-        )
-      ].sort(
-        (a, b) =>
-          a.localeCompare(b, "es")
-      );
+      const predios = [...new Set(
+        registros
+          .map(registro => String(registro.predio ?? "").trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "es"));
 
-      elementos.filtroPredio.innerHTML =
-        '<option value="TODOS">'
-        + "Todos los predios"
-        + "</option>";
+      elementos.filtroPredio.innerHTML = '<option value="TODOS">Todos los predios</option>';
 
       predios.forEach(predio => {
-        const opcion =
-          document.createElement(
-            "option"
-          );
-
+        const opcion = document.createElement("option");
         opcion.value = predio;
         opcion.textContent = predio;
-
-        elementos
-          .filtroPredio
-          .appendChild(opcion);
+        elementos.filtroPredio.appendChild(opcion);
       });
     }
 
     function filtrarRegistros() {
-      const busqueda =
-        normalizar(
-          elementos.buscar.value
-        );
+      const busqueda = normalizar(elementos.buscar.value);
+      const estado = elementos.filtroEstado.value;
+      const predio = elementos.filtroPredio.value;
 
-      const estado =
-        elementos
-          .filtroEstado
-          .value;
+      return registros.filter(registro => {
+        const contenido = normalizar([
+          registro.predio,
+          registro.pila,
+          registro.producto,
+          registro.cosecha,
+          registro.creado
+        ].join(" "));
 
-      const predio =
-        elementos
-          .filtroPredio
-          .value;
+        const coincideBusqueda = !busqueda || contenido.includes(busqueda);
 
-      return registros.filter(
-        registro => {
-          const contenido =
-            normalizar(
-              [
-                registro.predio,
-                registro.pila,
-                registro.producto,
-                registro.cosecha,
-                registro.creado
-              ].join(" ")
-            );
+        const coincideEstado = estado === "TODOS"
+          || obtenerEstado(registro) === estado;
 
-          const coincideBusqueda =
-            !busqueda
-            || contenido.includes(
-              busqueda
-            );
+        const coincidePredio = predio === "TODOS"
+          || String(registro.predio ?? "").trim() === predio;
 
-          const coincideEstado =
-            estado === "TODOS"
-            || obtenerEstado(registro)
-              === estado;
-
-          const coincidePredio =
-            predio === "TODOS"
-            || String(
-              registro.predio ?? ""
-            ).trim() === predio;
-
-          return (
-            coincideBusqueda
-            && coincideEstado
-            && coincidePredio
-          );
-        }
-      );
+        return coincideBusqueda && coincideEstado && coincidePredio;
+      });
     }
 
     function filaEscritorio(registro) {
-      const avance =
-        obtenerAvance(registro);
+      const avance = obtenerAvance(registro);
 
       return `
         <tr>
-          <td class="predio">
-            ${escapar(
-              registro.predio
-              || "Sin predio"
-            )}
-          </td>
-
-          <td class="pila">
-            ${escapar(
-              registro.pila ?? "—"
-            )}
-          </td>
-
+          <td class="predio">${escapar(registro.predio || "Sin predio")}</td>
+          <td class="pila">${escapar(registro.pila ?? "—")}</td>
           <td class="producto">
-            ${escapar(
-              registro.producto || "—"
-            )}
-
-            <span class="cosecha">
-              ${escapar(
-                registro.cosecha
-                || "Sin cosecha"
-              )}
-            </span>
+            ${escapar(registro.producto || "—")}
+            <span class="cosecha">${escapar(registro.cosecha || "Sin cosecha")}</span>
           </td>
-
           <td>
-            <span
-              class="estado ${claseEstado(
-                registro
-              )}"
-            >
+            <span class="estado ${claseEstado(registro)}">
               ${textoEstado(registro)}
             </span>
           </td>
-
-          <td class="numero">
-            ${numero(
-              obtenerM3Ajustado(
-                registro
-              ),
-              2
-            )}
-          </td>
-
+          <td class="numero">${numero(obtenerM3Ajustado(registro), 2)}</td>
           <td class="avance-celda">
             <div class="avance-cabecera">
               <span class="avance-valores">
-                ${numero(
-                  registro
-                    .remitos_ingresados
-                )}
-                /
-                ${numero(
-                  registro
-                    .remitos_estimados
-                )}
+                ${numero(registro.remitos_ingresados)} / ${numero(registro.remitos_estimados)}
               </span>
-
-              <span
-                class="avance-porcentaje"
-              >
-                ${avance}%
-              </span>
+              <span class="avance-porcentaje">${avance}%</span>
             </div>
-
-            <div
-              class="${claseBarra(
-                registro
-              )}"
-              aria-label="Avance ${avance}%"
-            >
-              <span
-                style="width:${avance}%"
-              ></span>
+            <div class="${claseBarra(registro)}" aria-label="Avance ${avance}%">
+              <span style="width:${avance}%"></span>
             </div>
           </td>
-
-          <td>
-            ${fecha(
-              registro.primera_fecha
-            )}
-          </td>
-
-          <td>
-            ${fecha(
-              registro.ultima_fecha
-            )}
-          </td>
+          <td>${fecha(registro.primera_fecha)}</td>
+          <td>${fecha(registro.ultima_fecha)}</td>
         </tr>
       `;
     }
 
     function tarjetaMovil(registro) {
-      const avance =
-        obtenerAvance(registro);
+      const avance = obtenerAvance(registro);
 
       return `
         <article class="tarjeta-pila">
           <div class="tarjeta-superior">
             <div>
-              <h2 class="tarjeta-predio">
-                ${escapar(
-                  registro.predio
-                  || "Sin predio"
-                )}
-              </h2>
-
-              <div
-                class="tarjeta-pila-numero"
-              >
-                Pila
-                ${escapar(
-                  registro.pila ?? "—"
-                )}
-              </div>
+              <h2 class="tarjeta-predio">${escapar(registro.predio || "Sin predio")}</h2>
+              <div class="tarjeta-pila-numero">Pila ${escapar(registro.pila ?? "—")}</div>
             </div>
-
-            <span
-              class="estado ${claseEstado(
-                registro
-              )}"
-            >
-              ${textoEstado(registro)}
-            </span>
+            <span class="estado ${claseEstado(registro)}">${textoEstado(registro)}</span>
           </div>
 
           <div class="tarjeta-producto">
-            ${escapar(
-              registro.producto || "—"
-            )}
-
-            <span class="cosecha">
-              ${escapar(
-                registro.cosecha
-                || "Sin cosecha"
-              )}
-            </span>
+            ${escapar(registro.producto || "—")}
+            <span class="cosecha">${escapar(registro.cosecha || "Sin cosecha")}</span>
           </div>
 
           <div class="tarjeta-datos">
             <div class="dato">
-              <div class="dato-valor">
-                ${numero(
-                  obtenerM3Ajustado(
-                    registro
-                  ),
-                  2
-                )}
-              </div>
-
-              <div class="dato-etiqueta">
-                M³ × 1,15
-              </div>
+              <div class="dato-valor">${numero(obtenerM3Ajustado(registro), 2)}</div>
+              <div class="dato-etiqueta">M³ × 1,15</div>
             </div>
-
             <div class="dato">
-              <div class="dato-valor">
-                ${numero(
-                  registro
-                    .remitos_ingresados
-                )}
-              </div>
-
-              <div class="dato-etiqueta">
-                Salidos
-              </div>
+              <div class="dato-valor">${numero(registro.remitos_ingresados)}</div>
+              <div class="dato-etiqueta">Salidos</div>
             </div>
-
             <div class="dato">
-              <div class="dato-valor">
-                ${numero(
-                  registro
-                    .remitos_estimados
-                )}
-              </div>
-
-              <div class="dato-etiqueta">
-                A cargar
-              </div>
+              <div class="dato-valor">${numero(registro.remitos_estimados)}</div>
+              <div class="dato-etiqueta">A cargar</div>
             </div>
           </div>
 
           <div class="tarjeta-avance">
             <div class="avance-cabecera">
-              <span class="avance-valores">
-                Avance estimado
-              </span>
-
-              <span
-                class="avance-porcentaje"
-              >
-                ${avance}%
-              </span>
+              <span class="avance-valores">Avance estimado</span>
+              <span class="avance-porcentaje">${avance}%</span>
             </div>
-
-            <div
-              class="${claseBarra(
-                registro
-              )}"
-            >
-              <span
-                style="width:${avance}%"
-              ></span>
-            </div>
+            <div class="${claseBarra(registro)}"><span style="width:${avance}%"></span></div>
           </div>
 
           <div class="tarjeta-fechas">
-            <span>
-              Primera:
-              <strong>
-                ${fecha(
-                  registro.primera_fecha
-                )}
-              </strong>
-            </span>
-
-            <span>
-              Última:
-              <strong>
-                ${fecha(
-                  registro.ultima_fecha
-                )}
-              </strong>
-            </span>
+            <span>Primera: <strong>${fecha(registro.primera_fecha)}</strong></span>
+            <span>Última: <strong>${fecha(registro.ultima_fecha)}</strong></span>
           </div>
         </article>
       `;
     }
 
     function renderizar() {
-      const filtrados =
-        ordenarRegistros(
-          filtrarRegistros()
-        );
+      const filtrados = ordenarRegistros(filtrarRegistros());
 
-      elementos
-        .cantidadVisible
-        .textContent =
-          `${numero(filtrados.length)}`
-          + " de "
-          + `${numero(registros.length)}`
-          + " pilas";
+      elementos.cantidadVisible.textContent =
+        `${numero(filtrados.length)} de ${numero(registros.length)} pilas`;
 
       if (filtrados.length === 0) {
-        const mensaje =
-          '<div class="vacio">'
-          + "No hay pilas que coincidan "
-          + "con los filtros."
-          + "</div>";
-
-        elementos
-          .cuerpoTabla
-          .innerHTML =
-            `<tr>`
-            + `<td colspan="8">`
-            + `${mensaje}`
-            + `</td>`
-            + `</tr>`;
-
-        elementos
-          .tarjetasMovil
-          .innerHTML = mensaje;
-
+        const mensaje = '<div class="vacio">No hay pilas que coincidan con los filtros.</div>';
+        elementos.cuerpoTabla.innerHTML = `<tr><td colspan="8">${mensaje}</td></tr>`;
+        elementos.tarjetasMovil.innerHTML = mensaje;
         return;
       }
 
-      elementos
-        .cuerpoTabla
-        .innerHTML =
-          filtrados
-            .map(filaEscritorio)
-            .join("");
-
-      elementos
-        .tarjetasMovil
-        .innerHTML =
-          filtrados
-            .map(tarjetaMovil)
-            .join("");
+      elementos.cuerpoTabla.innerHTML = filtrados.map(filaEscritorio).join("");
+      elementos.tarjetasMovil.innerHTML = filtrados.map(tarjetaMovil).join("");
     }
 
     async function cargarDatos() {
-      elementos
-        .mensajeError
-        .classList
-        .remove("visible");
+      elementos.mensajeError.classList.remove("visible");
 
       try {
-        const separador =
-          JSON_URL.includes("?")
-            ? "&"
-            : "?";
+        const separador = JSON_URL.includes("?") ? "&" : "?";
+        const urlSinCache = `${JSON_URL}${separador}t=${Date.now()}`;
 
-        const urlSinCache =
-          `${JSON_URL}`
-          + `${separador}`
-          + `t=${Date.now()}`;
-
-        const respuesta =
-          await fetch(
-            urlSinCache,
-            {
-              method: "GET",
-              cache: "no-store"
-            }
-          );
+        const respuesta = await fetch(urlSinCache, {
+          method: "GET",
+          cache: "no-store"
+        });
 
         if (!respuesta.ok) {
-          throw new Error(
-            `HTTP ${respuesta.status}`
-          );
+          throw new Error(`HTTP ${respuesta.status}`);
         }
 
-        const contenido =
-          await respuesta.json();
+        const contenido = await respuesta.json();
 
-        registros =
-          Array.isArray(contenido)
-            ? contenido
-            : Array.isArray(
-                contenido.registros
-              )
-              ? contenido.registros
-              : [];
+        registros = Array.isArray(contenido)
+          ? contenido
+          : Array.isArray(contenido.registros)
+            ? contenido.registros
+            : [];
 
-        elementos
-          .actualizado
-          .textContent =
-            `Actualizado `
-            + `${fechaHora(
-              contenido.actualizado
-            )}`;
+        elementos.actualizado.textContent =
+          `Actualizado ${fechaHora(contenido.actualizado)}`;
 
         actualizarResumen();
         cargarFiltroPredios();
         renderizar();
-
       } catch (error) {
         console.error(error);
 
-        elementos
-          .actualizado
-          .textContent =
-            "No se pudo actualizar";
+        elementos.actualizado.textContent = "No se pudo actualizar";
+        elementos.mensajeError.textContent =
+          `No se pudo leer PilasEnProceso.json. Detalle: ${error.message}`;
+        elementos.mensajeError.classList.add("visible");
 
-        elementos
-          .mensajeError
-          .textContent =
-            "No se pudo leer "
-            + "PilasEnProceso.json. "
-            + `Detalle: ${error.message}`;
-
-        elementos
-          .mensajeError
-          .classList
-          .add("visible");
-
-        elementos
-          .cuerpoTabla
-          .innerHTML =
-            '<tr>'
-            + '<td colspan="8" '
-            + 'class="vacio">'
-            + "No fue posible "
-            + "cargar los datos."
-            + "</td>"
-            + "</tr>";
-
-        elementos
-          .tarjetasMovil
-          .innerHTML =
-            '<div class="vacio">'
-            + "No fue posible "
-            + "cargar los datos."
-            + "</div>";
+        elementos.cuerpoTabla.innerHTML =
+          '<tr><td colspan="8" class="vacio">No fue posible cargar los datos.</td></tr>';
+        elementos.tarjetasMovil.innerHTML =
+          '<div class="vacio">No fue posible cargar los datos.</div>';
       }
     }
 
-    elementos
-      .buscar
-      .addEventListener(
-        "input",
-        renderizar
-      );
-
-    elementos
-      .filtroEstado
-      .addEventListener(
-        "change",
-        renderizar
-      );
-
-    elementos
-      .filtroPredio
-      .addEventListener(
-        "change",
-        renderizar
-      );
+    elementos.buscar.addEventListener("input", renderizar);
+    elementos.filtroEstado.addEventListener("change", renderizar);
+    elementos.filtroPredio.addEventListener("change", renderizar);
 
     cargarDatos();
   </script>
