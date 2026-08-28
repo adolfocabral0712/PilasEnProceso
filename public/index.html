@@ -390,6 +390,10 @@
       background: linear-gradient(90deg, #df6565, #a93636);
     }
 
+    .barra.amarilla > span {
+      background: linear-gradient(90deg, #f2c94c, #d99228);
+    }
+
     .estado {
       display: inline-flex;
       align-items: center;
@@ -803,13 +807,17 @@
       return normalizar(registro.estado_pila);
     }
 
-    function obtenerAvance(registro) {
+    function obtenerPorcentajeReal(registro) {
       const salidos = Number(registro.remitos_ingresados ?? 0);
       const estimados = Number(registro.remitos_estimados ?? 0);
 
       if (!estimados || estimados <= 0) return 0;
 
-      return Math.min(100, Math.max(0, Math.round((salidos / estimados) * 100)));
+      return Math.max(0, Math.round((salidos / estimados) * 100));
+    }
+
+    function obtenerAvance(registro) {
+      return Math.min(100, obtenerPorcentajeReal(registro));
     }
 
     function obtenerM3Ajustado(registro) {
@@ -836,9 +844,11 @@
     }
 
     function claseBarra(registro) {
-      return obtenerEstado(registro) === ESTADO_TERMINADA
-        ? "barra roja"
-        : "barra";
+      const porcentaje = obtenerPorcentajeReal(registro);
+
+      if (porcentaje > 100) return "barra roja";
+      if (porcentaje > 80) return "barra amarilla";
+      return "barra";
     }
 
     function textoEstado(registro) {
@@ -951,6 +961,7 @@
 
     function filaEscritorio(registro) {
       const avance = obtenerAvance(registro);
+      const porcentajeReal = obtenerPorcentajeReal(registro);
 
       return `
         <tr class="${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
@@ -971,9 +982,9 @@
               <span class="avance-valores">
                 ${numero(registro.remitos_ingresados)} / ${numero(registro.remitos_estimados)}
               </span>
-              <span class="avance-porcentaje">${avance}%</span>
+              <span class="avance-porcentaje">${porcentajeReal}%</span>
             </div>
-            <div class="${claseBarra(registro)}" aria-label="Avance ${avance}%">
+            <div class="${claseBarra(registro)}" aria-label="Avance ${porcentajeReal}%">
               <span style="width:${avance}%"></span>
             </div>
           </td>
@@ -985,6 +996,7 @@
 
     function tarjetaMovil(registro) {
       const avance = obtenerAvance(registro);
+      const porcentajeReal = obtenerPorcentajeReal(registro);
 
       return `
         <article class="tarjeta-pila ${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
@@ -1019,7 +1031,7 @@
           <div class="tarjeta-avance">
             <div class="avance-cabecera">
               <span class="avance-valores">Avance estimado</span>
-              <span class="avance-porcentaje">${avance}%</span>
+              <span class="avance-porcentaje">${porcentajeReal}%</span>
             </div>
             <div class="${claseBarra(registro)}"><span style="width:${avance}%"></span></div>
           </div>
