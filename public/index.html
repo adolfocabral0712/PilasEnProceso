@@ -139,6 +139,25 @@
       border-radius: 17px;
       background: var(--blanco);
       box-shadow: 0 5px 20px rgba(30, 60, 42, 0.045);
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .kpi:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 24px rgba(30, 60, 42, 0.11);
+    }
+
+    .kpi:focus-visible {
+      outline: 3px solid rgba(51, 134, 95, 0.28);
+      outline-offset: 3px;
+    }
+
+    .kpi.activa {
+      border-color: var(--kpi-color, var(--verde-600));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--kpi-color, var(--verde-600)) 18%, transparent);
     }
 
     .kpi::after {
@@ -251,7 +270,7 @@
     td {
       padding: 13px 12px;
       border-bottom: 1px solid #ebeee9;
-      text-align: left;
+      text-align: center;
       vertical-align: middle;
     }
 
@@ -322,7 +341,7 @@
     }
 
     .numero {
-      text-align: right;
+      text-align: center;
       font-variant-numeric: tabular-nums;
       font-weight: 750;
     }
@@ -616,19 +635,19 @@
     <div class="mensaje-error" id="mensajeError"></div>
 
     <section class="kpis" aria-label="Resumen">
-      <article class="kpi verde">
+      <article class="kpi verde activa" data-estado="TODOS" role="button" tabindex="0" aria-pressed="true">
         <div class="kpi-etiqueta">Pilas en proceso</div>
         <div class="kpi-valor" id="kpiTotal">0</div>
         <div class="kpi-detalle">Registros activos</div>
       </article>
 
-      <article class="kpi ambar">
+      <article class="kpi ambar" data-estado="PUEDE POR CARGAR" role="button" tabindex="0" aria-pressed="false">
         <div class="kpi-etiqueta">Pueden por cargar</div>
         <div class="kpi-valor" id="kpiPorCargar">0</div>
         <div class="kpi-detalle">Aún debajo de la estimación</div>
       </article>
 
-      <article class="kpi azul">
+      <article class="kpi azul" data-estado="QUIZAS TERMINADA" role="button" tabindex="0" aria-pressed="false">
         <div class="kpi-etiqueta">Quizás terminadas</div>
         <div class="kpi-valor" id="kpiTerminadas">0</div>
         <div class="kpi-detalle">Alcanzaron la estimación</div>
@@ -664,10 +683,10 @@
           <thead>
             <tr>
               <th>Predio</th>
-              <th style="text-align:center">Pila</th>
+              <th>Pila</th>
               <th>Producto / Cosecha</th>
               <th>Estado</th>
-              <th style="text-align:right">M³ × 1,15</th>
+              <th>M³ × 1,15</th>
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
@@ -713,6 +732,8 @@
       tarjetasMovil: document.getElementById("tarjetasMovil"),
       cantidadVisible: document.getElementById("cantidadVisible")
     };
+
+    const tarjetasKpi = [...document.querySelectorAll(".kpi[data-estado]")];
 
     function escapar(valor) {
       return String(valor ?? "")
@@ -1025,6 +1046,22 @@
       elementos.tarjetasMovil.innerHTML = filtrados.map(tarjetaMovil).join("");
     }
 
+    function marcarKpiActivo(estado) {
+      tarjetasKpi.forEach(tarjeta => {
+        const activa = tarjeta.dataset.estado === estado;
+        tarjeta.classList.toggle("activa", activa);
+        tarjeta.setAttribute("aria-pressed", activa ? "true" : "false");
+      });
+    }
+
+    function filtrarDesdeKpi(estado) {
+      elementos.buscar.value = "";
+      elementos.filtroPredio.value = "TODOS";
+      elementos.filtroEstado.value = estado;
+      marcarKpiActivo(estado);
+      renderizar();
+    }
+
     async function cargarDatos() {
       elementos.mensajeError.classList.remove("visible");
 
@@ -1071,8 +1108,21 @@
     }
 
     elementos.buscar.addEventListener("input", renderizar);
-    elementos.filtroEstado.addEventListener("change", renderizar);
+    elementos.filtroEstado.addEventListener("change", () => {
+      marcarKpiActivo(elementos.filtroEstado.value);
+      renderizar();
+    });
     elementos.filtroPredio.addEventListener("change", renderizar);
+
+    tarjetasKpi.forEach(tarjeta => {
+      tarjeta.addEventListener("click", () => filtrarDesdeKpi(tarjeta.dataset.estado));
+      tarjeta.addEventListener("keydown", evento => {
+        if (evento.key === "Enter" || evento.key === " ") {
+          evento.preventDefault();
+          filtrarDesdeKpi(tarjeta.dataset.estado);
+        }
+      });
+    });
 
     cargarDatos();
   </script>
