@@ -282,8 +282,15 @@
 
     .predio {
       max-width: 260px;
-      color: #183b2c;
       font-weight: 800;
+    }
+
+    .predio-color-1 {
+      color: #32cd32;
+    }
+
+    .predio-color-2 {
+      color: #05ad98;
     }
 
     .pila {
@@ -512,7 +519,6 @@
 
       .tarjeta-predio {
         margin: 0;
-        color: #183b2c;
         font-size: 15px;
         font-weight: 850;
       }
@@ -892,12 +898,27 @@
       });
     }
 
+    function claseColorPredio(registro) {
+      const nombrePredio = String(registro.predio ?? "").trim();
+
+      const prediosOrdenados = [...new Set(
+        registros
+          .map(item => String(item.predio ?? "").trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "es"));
+
+      const posicion = prediosOrdenados.indexOf(nombrePredio);
+      return posicion >= 0 && posicion % 2 === 1
+        ? "predio-color-2"
+        : "predio-color-1";
+    }
+
     function filaEscritorio(registro) {
       const avance = obtenerAvance(registro);
 
       return `
         <tr>
-          <td class="predio">${escapar(registro.predio || "Sin predio")}</td>
+          <td class="predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</td>
           <td class="pila">${escapar(registro.pila ?? "—")}</td>
           <td class="producto">
             ${escapar(registro.producto || "—")}
@@ -933,7 +954,7 @@
         <article class="tarjeta-pila">
           <div class="tarjeta-superior">
             <div>
-              <h2 class="tarjeta-predio">${escapar(registro.predio || "Sin predio")}</h2>
+              <h2 class="tarjeta-predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</h2>
               <div class="tarjeta-pila-numero">Pila ${escapar(registro.pila ?? "—")}</div>
             </div>
             <span class="estado ${claseEstado(registro)}">${textoEstado(registro)}</span>
