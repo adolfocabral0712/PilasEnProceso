@@ -276,6 +276,14 @@
       background: #fafcf9;
     }
 
+    tbody tr.fila-quizas-terminada td {
+      background: #fff0f0;
+    }
+
+    tbody tr.fila-quizas-terminada:hover td {
+      background: #ffe5e5;
+    }
+
     tbody tr:last-child td {
       border-bottom: 0;
     }
@@ -508,6 +516,10 @@
 
       .tarjeta-pila:last-child {
         border-bottom: 0;
+      }
+
+      .tarjeta-pila.fila-quizas-terminada {
+        background: #fff0f0;
       }
 
       .tarjeta-superior {
@@ -917,7 +929,7 @@
       const avance = obtenerAvance(registro);
 
       return `
-        <tr>
+        <tr class="${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
           <td class="predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</td>
           <td class="pila">${escapar(registro.pila ?? "—")}</td>
           <td class="producto">
@@ -951,7 +963,7 @@
       const avance = obtenerAvance(registro);
 
       return `
-        <article class="tarjeta-pila">
+        <article class="tarjeta-pila ${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
           <div class="tarjeta-superior">
             <div>
               <h2 class="tarjeta-predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</h2>
