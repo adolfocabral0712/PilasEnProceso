@@ -532,20 +532,27 @@
       }
 
       .tarjetas-movil {
-        display: block;
+        display: grid;
+        gap: 14px;
+        padding: 14px;
+        background: #edf1eb;
       }
 
       .tarjeta-pila {
-        padding: 15px;
-        border-bottom: 1px solid #e6eae4;
+        padding: 16px;
+        border: 1px solid #d7ded4;
+        border-radius: 15px;
+        background: #ffffff;
+        box-shadow: 0 4px 14px rgba(30, 60, 42, 0.08);
       }
 
       .tarjeta-pila:last-child {
-        border-bottom: 0;
+        border-bottom: 1px solid #d7ded4;
       }
 
       .tarjeta-pila.fila-quizas-terminada {
         background: #fff0f0;
+        border-color: #edc3c3;
       }
 
       .tarjeta-superior {
