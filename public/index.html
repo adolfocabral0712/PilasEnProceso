@@ -139,6 +139,22 @@
       border-radius: 17px;
       background: var(--blanco);
       box-shadow: 0 5px 20px rgba(30, 60, 42, 0.045);
+      cursor: pointer;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kpi:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 26px rgba(30, 60, 42, 0.10);
+    }
+
+    .kpi:active {
+      transform: translateY(0);
     }
 
     .kpi::after {
@@ -151,10 +167,50 @@
       background: var(--kpi-color, var(--verde-600));
     }
 
-    .kpi.verde { --kpi-color: #3a8c63; }
-    .kpi.ambar { --kpi-color: #d99228; }
-    .kpi.azul { --kpi-color: #4d87b4; }
-    .kpi.oscuro { --kpi-color: var(--verde-900); }
+    .kpi.verde {
+      --kpi-color: #3a8c63;
+    }
+
+    .kpi.ambar {
+      --kpi-color: #d99228;
+    }
+
+    .kpi.azul {
+      --kpi-color: #4d87b4;
+    }
+
+    .kpi.oscuro {
+      --kpi-color: var(--verde-900);
+    }
+
+    .kpi.rojo {
+      --kpi-color: #d95b5b;
+      background: #fff0f0;
+      border-color: #ecc1c1;
+    }
+
+    .kpi.rojo .kpi-etiqueta,
+    .kpi.rojo .kpi-detalle {
+      color: #994343;
+    }
+
+    .kpi.rojo .kpi-valor {
+      color: #a93636;
+    }
+
+    .kpi.activa {
+      border-color: var(--verde-700);
+      box-shadow:
+        0 0 0 3px rgba(40, 108, 76, 0.12),
+        0 9px 26px rgba(30, 60, 42, 0.10);
+    }
+
+    .kpi.rojo.activa {
+      border-color: #c95959;
+      box-shadow:
+        0 0 0 3px rgba(169, 54, 54, 0.13),
+        0 9px 26px rgba(120, 45, 45, 0.10);
+    }
 
     .kpi-etiqueta {
       margin-bottom: 11px;
@@ -251,7 +307,7 @@
     td {
       padding: 13px 12px;
       border-bottom: 1px solid #ebeee9;
-      text-align: left;
+      text-align: center;
       vertical-align: middle;
     }
 
@@ -280,10 +336,82 @@
       border-bottom: 0;
     }
 
+    .fila-terminada {
+      background: #fff5f5;
+    }
+
+    .fila-terminada:hover {
+      background: #ffecec;
+    }
+
     .predio {
       max-width: 260px;
       color: #183b2c;
       font-weight: 800;
+      text-align: center;
+    }
+
+    .predio-etiqueta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-weight: 850;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .predio-color-0 {
+      background: #b7ff4a !important;
+      color: #173300 !important;
+    }
+
+    .predio-color-1 {
+      background: #05AD98 !important;
+      color: #ffffff !important;
+    }
+
+    .predio-color-2 {
+      background: #d9f29d !important;
+      color: #314419 !important;
+    }
+
+    .predio-color-3 {
+      background: #8dd7c9 !important;
+      color: #123b35 !important;
+    }
+
+    .predio-color-4 {
+      background: #c7dfef !important;
+      color: #203b4c !important;
+    }
+
+    .predio-color-5 {
+      background: #e4d5f3 !important;
+      color: #49365c !important;
+    }
+
+    .predio-color-6 {
+      background: #f2dfaa !important;
+      color: #55451d !important;
+    }
+
+    .predio-color-7 {
+      background: #f6c9a8 !important;
+      color: #5c3015 !important;
+    }
+
+    .predio-color-8 {
+      background: #d8d5ff !important;
+      color: #39336e !important;
+    }
+
+    .predio-color-9 {
+      background: #bfe9f1 !important;
+      color: #214851 !important;
     }
 
     .pila {
@@ -296,6 +424,7 @@
     .producto {
       max-width: 260px;
       font-weight: 700;
+      text-align: center;
     }
 
     .cosecha {
@@ -307,7 +436,7 @@
     }
 
     .numero {
-      text-align: right;
+      text-align: center;
       font-variant-numeric: tabular-nums;
       font-weight: 750;
     }
@@ -346,10 +475,17 @@
       width: 0;
       height: 100%;
       border-radius: inherit;
+    }
+
+    .barra-verde > span {
       background: linear-gradient(90deg, #4ca875, #26734f);
     }
 
-    .barra.roja > span {
+    .barra-amarilla > span {
+      background: linear-gradient(90deg, #f0c64d, #d59621);
+    }
+
+    .barra-roja > span {
       background: linear-gradient(90deg, #df6565, #a93636);
     }
 
@@ -498,8 +634,13 @@
       }
 
       .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 9px;
         margin-bottom: 12px;
+      }
+
+      .kpi:first-child {
+        grid-column: 1 / -1;
       }
 
       .kpi {
@@ -512,15 +653,18 @@
         min-height: 28px;
         margin-bottom: 7px;
         font-size: 10px;
+        text-align: center;
       }
 
       .kpi-valor {
         font-size: 25px;
+        text-align: center;
       }
 
       .kpi-detalle {
         margin-top: 6px;
         font-size: 10px;
+        text-align: center;
       }
 
       .panel {
@@ -546,12 +690,17 @@
       }
 
       .tarjeta-pila {
+        margin: 10px;
         padding: 15px;
-        border-bottom: 1px solid #e6eae4;
+        border: 1px solid #dde4da;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 4px 14px rgba(30, 60, 42, 0.04);
       }
 
-      .tarjeta-pila:last-child {
-        border-bottom: 0;
+      .tarjeta-pila.terminada {
+        border-color: #ecc1c1;
+        background: #fff4f4;
       }
 
       .tarjeta-superior {
@@ -568,17 +717,25 @@
         font-weight: 850;
       }
 
+      .tarjeta-predio .predio-etiqueta {
+        width: auto;
+        min-width: 130px;
+        padding: 7px 10px;
+      }
+
       .tarjeta-pila-numero {
-        margin-top: 3px;
+        margin-top: 6px;
         color: var(--texto-suave);
         font-size: 12px;
         font-weight: 750;
+        text-align: center;
       }
 
       .tarjeta-producto {
         margin-top: 12px;
         font-size: 13px;
         font-weight: 750;
+        text-align: center;
       }
 
       .tarjeta-datos {
@@ -641,7 +798,10 @@
         <p class="sobre-titulo">Control operativo</p>
         <h1>Estado de Pilas en Proceso</h1>
       </div>
-      <div class="actualizado" id="actualizado">Cargando actualización…</div>
+
+      <div class="actualizado" id="actualizado">
+        Cargando actualización…
+      </div>
     </div>
   </header>
 
@@ -649,19 +809,35 @@
     <div class="mensaje-error" id="mensajeError"></div>
 
     <section class="kpis" aria-label="Resumen">
-      <article class="kpi verde">
+
+      <article
+        class="kpi verde activa"
+        data-filtro-kpi="TODOS"
+        role="button"
+        tabindex="0"
+      >
         <div class="kpi-etiqueta">Pilas en proceso</div>
         <div class="kpi-valor" id="kpiTotal">0</div>
         <div class="kpi-detalle">Registros activos</div>
       </article>
 
-      <article class="kpi ambar">
+      <article
+        class="kpi ambar"
+        data-filtro-kpi="PUEDE POR CARGAR"
+        role="button"
+        tabindex="0"
+      >
         <div class="kpi-etiqueta">Pueden por cargar</div>
         <div class="kpi-valor" id="kpiPorCargar">0</div>
         <div class="kpi-detalle">Aún debajo de la estimación</div>
       </article>
 
-      <article class="kpi azul">
+      <article
+        class="kpi rojo"
+        data-filtro-kpi="QUIZAS TERMINADA"
+        role="button"
+        tabindex="0"
+      >
         <div class="kpi-etiqueta">Quizás terminadas</div>
         <div class="kpi-valor" id="kpiTerminadas">0</div>
         <div class="kpi-detalle">Alcanzaron la estimación</div>
@@ -670,7 +846,9 @@
     </section>
 
     <section class="panel">
+
       <div class="controles">
+
         <div class="campo-busqueda">
           <input
             type="search"
@@ -681,46 +859,65 @@
           >
         </div>
 
-        <select id="filtroEstado" class="control" aria-label="Filtrar por estado">
+        <select
+          id="filtroEstado"
+          class="control"
+          aria-label="Filtrar por estado"
+        >
           <option value="TODOS">Todos los estados</option>
           <option value="PUEDE POR CARGAR">Puede por cargar</option>
           <option value="QUIZAS TERMINADA">Quizás terminada</option>
         </select>
 
-        <select id="filtroPredio" class="control" aria-label="Filtrar por predio">
+        <select
+          id="filtroPredio"
+          class="control"
+          aria-label="Filtrar por predio"
+        >
           <option value="TODOS">Todos los predios</option>
         </select>
+
       </div>
 
       <div class="tabla-contenedor">
         <table>
+
           <thead>
             <tr>
               <th>Predio</th>
-              <th style="text-align:center">Pila</th>
+              <th>Pila</th>
               <th>Producto / Cosecha</th>
               <th>Estado</th>
-              <th style="text-align:right">M³ × 1,15</th>
+              <th>M³ × 1,15</th>
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
-              <th style="text-align:center">Acción</th>
+              <th>Acción</th>
             </tr>
           </thead>
+
           <tbody id="cuerpoTabla">
-            <tr><td colspan="9" class="cargando">Cargando información de pilas…</td></tr>
+            <tr>
+              <td colspan="9" class="cargando">
+                Cargando información de pilas…
+              </td>
+            </tr>
           </tbody>
+
         </table>
       </div>
 
       <div class="tarjetas-movil" id="tarjetasMovil">
-        <div class="cargando">Cargando información de pilas…</div>
+        <div class="cargando">
+          Cargando información de pilas…
+        </div>
       </div>
 
       <footer class="pie-tabla">
         <span id="cantidadVisible">0 pilas</span>
         <span>Volumen × 1,15 / capacidad</span>
       </footer>
+
     </section>
   </main>
 
@@ -733,6 +930,8 @@
     const ESTADO_TERMINADA = "QUIZAS TERMINADA";
 
     let registros = [];
+    let mapaColoresPredios = new Map();
+
     const ordenesActivas = new Map();
     let temporizadorOrdenes = null;
 
@@ -760,7 +959,12 @@
     }
 
     function numero(valor, decimales = 0) {
-      if (valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))) {
+      if (
+        valor === null ||
+        valor === undefined ||
+        valor === "" ||
+        Number.isNaN(Number(valor))
+      ) {
         return "—";
       }
 
@@ -784,7 +988,9 @@
     }
 
     function fechaHora(valor) {
-      if (!valor) return "Sin fecha de actualización";
+      if (!valor) {
+        return "Sin fecha de actualización";
+      }
 
       const objetoFecha = new Date(valor);
 
@@ -819,17 +1025,28 @@
       const salidos = Number(registro.remitos_ingresados ?? 0);
       const estimados = Number(registro.remitos_estimados ?? 0);
 
-      if (!estimados || estimados <= 0) return 0;
+      if (!estimados || estimados <= 0) {
+        return 0;
+      }
 
-      return Math.min(100, Math.max(0, Math.round((salidos / estimados) * 100)));
+      return Math.max(
+        0,
+        Math.round((salidos / estimados) * 100)
+      );
+    }
+
+    function obtenerAnchoBarra(registro) {
+      const avance = obtenerAvance(registro);
+
+      return Math.min(avance, 100);
     }
 
     function obtenerM3Ajustado(registro) {
       if (
-        registro.m3_calc === null
-        || registro.m3_calc === undefined
-        || registro.m3_calc === ""
-        || Number.isNaN(Number(registro.m3_calc))
+        registro.m3_calc === null ||
+        registro.m3_calc === undefined ||
+        registro.m3_calc === "" ||
+        Number.isNaN(Number(registro.m3_calc))
       ) {
         return null;
       }
@@ -838,7 +1055,10 @@
     }
 
     function claseEstado(registro) {
-      if (registro.remitos_estimados === null || registro.remitos_estimados === undefined) {
+      if (
+        registro.remitos_estimados === null ||
+        registro.remitos_estimados === undefined
+      ) {
         return "sin-calculo";
       }
 
@@ -848,13 +1068,24 @@
     }
 
     function claseBarra(registro) {
-      return obtenerEstado(registro) === ESTADO_TERMINADA
-        ? "barra roja"
-        : "barra";
+      const avance = obtenerAvance(registro);
+
+      if (avance > 100) {
+        return "barra barra-roja";
+      }
+
+      if (avance >= 80) {
+        return "barra barra-amarilla";
+      }
+
+      return "barra barra-verde";
     }
 
     function textoEstado(registro) {
-      if (registro.remitos_estimados === null || registro.remitos_estimados === undefined) {
+      if (
+        registro.remitos_estimados === null ||
+        registro.remitos_estimados === undefined
+      ) {
         return "SIN CÁLCULO";
       }
 
@@ -863,20 +1094,54 @@
         : "PUEDE POR CARGAR";
     }
 
+    function prepararColoresPredios() {
+      const predios = [
+        ...new Set(
+          registros
+            .map(registro => String(registro.predio ?? "").trim())
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b, "es"));
+
+      mapaColoresPredios = new Map();
+
+      predios.forEach((predio, indice) => {
+        mapaColoresPredios.set(
+          normalizar(predio),
+          indice % 10
+        );
+      });
+    }
+
+    function claseColorPredio(predio) {
+      const indice =
+        mapaColoresPredios.get(normalizar(predio)) ?? 0;
+
+      return `predio-color-${indice}`;
+    }
+
     function ordenarRegistros(lista) {
       return [...lista].sort((a, b) => {
         const predioA = normalizar(a.predio);
         const predioB = normalizar(b.predio);
 
-        const comparacionPredio = predioA.localeCompare(predioB, "es");
-        if (comparacionPredio !== 0) return comparacionPredio;
+        const comparacionPredio =
+          predioA.localeCompare(predioB, "es");
+
+        if (comparacionPredio !== 0) {
+          return comparacionPredio;
+        }
 
         const fechaA = a.ultima_fecha
-          ? new Date(`${String(a.ultima_fecha).slice(0, 10)}T00:00:00`).getTime()
+          ? new Date(
+              `${String(a.ultima_fecha).slice(0, 10)}T00:00:00`
+            ).getTime()
           : 0;
 
         const fechaB = b.ultima_fecha
-          ? new Date(`${String(b.ultima_fecha).slice(0, 10)}T00:00:00`).getTime()
+          ? new Date(
+              `${String(b.ultima_fecha).slice(0, 10)}T00:00:00`
+            ).getTime()
           : 0;
 
         if (fechaA !== fechaB) {
@@ -891,11 +1156,13 @@
       const total = registros.length;
 
       const porCargar = registros.filter(
-        registro => obtenerEstado(registro) === ESTADO_CARGAR
+        registro =>
+          obtenerEstado(registro) === ESTADO_CARGAR
       ).length;
 
       const terminadas = registros.filter(
-        registro => obtenerEstado(registro) === ESTADO_TERMINADA
+        registro =>
+          obtenerEstado(registro) === ESTADO_TERMINADA
       ).length;
 
       elementos.kpiTotal.textContent = numero(total);
@@ -904,20 +1171,32 @@
     }
 
     function cargarFiltroPredios() {
-      const predios = [...new Set(
-        registros
-          .map(registro => String(registro.predio ?? "").trim())
-          .filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b, "es"));
+      const valorActual = elementos.filtroPredio.value;
 
-      elementos.filtroPredio.innerHTML = '<option value="TODOS">Todos los predios</option>';
+      const predios = [
+        ...new Set(
+          registros
+            .map(registro => String(registro.predio ?? "").trim())
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b, "es"));
+
+      elementos.filtroPredio.innerHTML =
+        '<option value="TODOS">Todos los predios</option>';
 
       predios.forEach(predio => {
         const opcion = document.createElement("option");
+
         opcion.value = predio;
         opcion.textContent = predio;
+
         elementos.filtroPredio.appendChild(opcion);
       });
+
+      const sigueExistiendo = predios.includes(valorActual);
+
+      elementos.filtroPredio.value =
+        sigueExistiendo ? valorActual : "TODOS";
     }
 
     function filtrarRegistros() {
@@ -934,15 +1213,22 @@
           registro.creado
         ].join(" "));
 
-        const coincideBusqueda = !busqueda || contenido.includes(busqueda);
+        const coincideBusqueda =
+          !busqueda || contenido.includes(busqueda);
 
-        const coincideEstado = estado === "TODOS"
-          || obtenerEstado(registro) === estado;
+        const coincideEstado =
+          estado === "TODOS" ||
+          obtenerEstado(registro) === estado;
 
-        const coincidePredio = predio === "TODOS"
-          || String(registro.predio ?? "").trim() === predio;
+        const coincidePredio =
+          predio === "TODOS" ||
+          String(registro.predio ?? "").trim() === predio;
 
-        return coincideBusqueda && coincideEstado && coincidePredio;
+        return (
+          coincideBusqueda &&
+          coincideEstado &&
+          coincidePredio
+        );
       });
     }
 
@@ -951,26 +1237,55 @@
     }
 
     function textoBoton(registro) {
-      const orden = ordenesActivas.get(claveRegistro(registro));
+      const orden =
+        ordenesActivas.get(claveRegistro(registro));
+
       if (!orden) return "CERRAR PILA";
-      if (orden.estado === "PENDIENTE") return "PENDIENTE";
-      if (orden.estado === "EJECUTANDO") return "EJECUTANDO";
-      if (orden.estado === "COMPLETADO") return "COMPLETADO";
-      if (orden.estado === "ERROR") return "REINTENTAR";
+
+      if (orden.estado === "PENDIENTE") {
+        return "PENDIENTE";
+      }
+
+      if (orden.estado === "EJECUTANDO") {
+        return "EJECUTANDO";
+      }
+
+      if (orden.estado === "COMPLETADO") {
+        return "COMPLETADO";
+      }
+
+      if (orden.estado === "ERROR") {
+        return "REINTENTAR";
+      }
+
       return "CERRAR PILA";
     }
 
     function claseBoton(registro) {
-      const orden = ordenesActivas.get(claveRegistro(registro));
+      const orden =
+        ordenesActivas.get(claveRegistro(registro));
+
       if (!orden) return "";
-      if (orden.estado === "COMPLETADO") return "completado";
-      if (orden.estado === "ERROR") return "error";
+
+      if (orden.estado === "COMPLETADO") {
+        return "completado";
+      }
+
+      if (orden.estado === "ERROR") {
+        return "error";
+      }
+
       return "";
     }
 
     function botonDeshabilitado(registro) {
-      const orden = ordenesActivas.get(claveRegistro(registro));
-      return orden && ["PENDIENTE", "EJECUTANDO", "COMPLETADO"].includes(orden.estado)
+      const orden =
+        ordenesActivas.get(claveRegistro(registro));
+
+      return orden &&
+        ["PENDIENTE", "EJECUTANDO", "COMPLETADO"].includes(
+          orden.estado
+        )
         ? "disabled"
         : "";
     }
@@ -984,244 +1299,548 @@
           data-predio="${escapar(registro.predio || "")}"
           data-pila="${escapar(registro.pila ?? "")}"
           ${botonDeshabilitado(registro)}
-        >${textoBoton(registro)}</button>
+        >
+          ${textoBoton(registro)}
+        </button>
       `;
     }
 
     function filaEscritorio(registro) {
       const avance = obtenerAvance(registro);
+      const anchoBarra = obtenerAnchoBarra(registro);
+
+      const claseFila =
+        obtenerEstado(registro) === ESTADO_TERMINADA
+          ? "fila-terminada"
+          : "";
 
       return `
-        <tr>
-          <td class="predio">${escapar(registro.predio || "Sin predio")}</td>
-          <td class="pila">${escapar(registro.pila ?? "—")}</td>
+        <tr class="${claseFila}">
+
+          <td class="predio">
+            <span class="predio-etiqueta ${claseColorPredio(registro.predio)}">
+              ${escapar(registro.predio || "Sin predio")}
+            </span>
+          </td>
+
+          <td class="pila">
+            ${escapar(registro.pila ?? "—")}
+          </td>
+
           <td class="producto">
             ${escapar(registro.producto || "—")}
-            <span class="cosecha">${escapar(registro.cosecha || "Sin cosecha")}</span>
+            <span class="cosecha">
+              ${escapar(registro.cosecha || "Sin cosecha")}
+            </span>
           </td>
+
           <td>
             <span class="estado ${claseEstado(registro)}">
               ${textoEstado(registro)}
             </span>
           </td>
-          <td class="numero">${numero(obtenerM3Ajustado(registro), 2)}</td>
-          <td class="avance-celda">
-            <div class="avance-cabecera">
-              <span class="avance-valores">
-                ${numero(registro.remitos_ingresados)} / ${numero(registro.remitos_estimados)}
-              </span>
-              <span class="avance-porcentaje">${avance}%</span>
-            </div>
-            <div class="${claseBarra(registro)}" aria-label="Avance ${avance}%">
-              <span style="width:${avance}%"></span>
-            </div>
+
+          <td class="numero">
+            ${numero(obtenerM3Ajustado(registro), 2)}
           </td>
-          <td>${fecha(registro.primera_fecha)}</td>
-          <td>${fecha(registro.ultima_fecha)}</td>
-          <td class="accion-celda">${botonCerrar(registro)}</td>
+
+          <td class="avance-celda">
+
+            <div class="avance-cabecera">
+
+              <span class="avance-valores">
+                ${numero(registro.remitos_ingresados)}
+                /
+                ${numero(registro.remitos_estimados)}
+              </span>
+
+              <span class="avance-porcentaje">
+                ${avance}%
+              </span>
+
+            </div>
+
+            <div
+              class="${claseBarra(registro)}"
+              aria-label="Avance ${avance}%"
+            >
+              <span style="width:${anchoBarra}%"></span>
+            </div>
+
+          </td>
+
+          <td>
+            ${fecha(registro.primera_fecha)}
+          </td>
+
+          <td>
+            ${fecha(registro.ultima_fecha)}
+          </td>
+
+          <td class="accion-celda">
+            ${botonCerrar(registro)}
+          </td>
+
         </tr>
       `;
     }
 
     function tarjetaMovil(registro) {
       const avance = obtenerAvance(registro);
+      const anchoBarra = obtenerAnchoBarra(registro);
+
+      const claseTarjeta =
+        obtenerEstado(registro) === ESTADO_TERMINADA
+          ? "terminada"
+          : "";
 
       return `
-        <article class="tarjeta-pila">
+        <article class="tarjeta-pila ${claseTarjeta}">
+
           <div class="tarjeta-superior">
+
             <div>
-              <h2 class="tarjeta-predio">${escapar(registro.predio || "Sin predio")}</h2>
-              <div class="tarjeta-pila-numero">Pila ${escapar(registro.pila ?? "—")}</div>
+              <h2 class="tarjeta-predio">
+                <span class="predio-etiqueta ${claseColorPredio(registro.predio)}">
+                  ${escapar(registro.predio || "Sin predio")}
+                </span>
+              </h2>
+
+              <div class="tarjeta-pila-numero">
+                Pila ${escapar(registro.pila ?? "—")}
+              </div>
             </div>
-            <span class="estado ${claseEstado(registro)}">${textoEstado(registro)}</span>
+
+            <span class="estado ${claseEstado(registro)}">
+              ${textoEstado(registro)}
+            </span>
+
           </div>
 
           <div class="tarjeta-producto">
+
             ${escapar(registro.producto || "—")}
-            <span class="cosecha">${escapar(registro.cosecha || "Sin cosecha")}</span>
+
+            <span class="cosecha">
+              ${escapar(registro.cosecha || "Sin cosecha")}
+            </span>
+
           </div>
 
           <div class="tarjeta-datos">
+
             <div class="dato">
-              <div class="dato-valor">${numero(obtenerM3Ajustado(registro), 2)}</div>
-              <div class="dato-etiqueta">M³ × 1,15</div>
+              <div class="dato-valor">
+                ${numero(obtenerM3Ajustado(registro), 2)}
+              </div>
+              <div class="dato-etiqueta">
+                M³ × 1,15
+              </div>
             </div>
+
             <div class="dato">
-              <div class="dato-valor">${numero(registro.remitos_ingresados)}</div>
-              <div class="dato-etiqueta">Salidos</div>
+              <div class="dato-valor">
+                ${numero(registro.remitos_ingresados)}
+              </div>
+              <div class="dato-etiqueta">
+                Salidos
+              </div>
             </div>
+
             <div class="dato">
-              <div class="dato-valor">${numero(registro.remitos_estimados)}</div>
-              <div class="dato-etiqueta">A cargar</div>
+              <div class="dato-valor">
+                ${numero(registro.remitos_estimados)}
+              </div>
+              <div class="dato-etiqueta">
+                A cargar
+              </div>
             </div>
+
           </div>
 
           <div class="tarjeta-avance">
+
             <div class="avance-cabecera">
-              <span class="avance-valores">Avance estimado</span>
-              <span class="avance-porcentaje">${avance}%</span>
+
+              <span class="avance-valores">
+                Avance estimado
+              </span>
+
+              <span class="avance-porcentaje">
+                ${avance}%
+              </span>
+
             </div>
-            <div class="${claseBarra(registro)}"><span style="width:${avance}%"></span></div>
+
+            <div class="${claseBarra(registro)}">
+              <span style="width:${anchoBarra}%"></span>
+            </div>
+
           </div>
 
           <div class="tarjeta-fechas">
-            <span>Primera: <strong>${fecha(registro.primera_fecha)}</strong></span>
-            <span>Última: <strong>${fecha(registro.ultima_fecha)}</strong></span>
+
+            <span>
+              Primera:
+              <strong>
+                ${fecha(registro.primera_fecha)}
+              </strong>
+            </span>
+
+            <span>
+              Última:
+              <strong>
+                ${fecha(registro.ultima_fecha)}
+              </strong>
+            </span>
+
           </div>
 
           <div class="accion-movil">
             ${botonCerrar(registro)}
           </div>
+
         </article>
       `;
     }
 
+    function actualizarKpiActivo() {
+      const estado = elementos.filtroEstado.value;
+
+      document
+        .querySelectorAll("[data-filtro-kpi]")
+        .forEach(kpi => {
+          kpi.classList.toggle(
+            "activa",
+            kpi.dataset.filtroKpi === estado
+          );
+        });
+    }
+
     function renderizar() {
-      const filtrados = ordenarRegistros(filtrarRegistros());
+      const filtrados =
+        ordenarRegistros(filtrarRegistros());
 
       elementos.cantidadVisible.textContent =
         `${numero(filtrados.length)} de ${numero(registros.length)} pilas`;
 
+      actualizarKpiActivo();
+
       if (filtrados.length === 0) {
-        const mensaje = '<div class="vacio">No hay pilas que coincidan con los filtros.</div>';
-        elementos.cuerpoTabla.innerHTML = `<tr><td colspan="9">${mensaje}</td></tr>`;
-        elementos.tarjetasMovil.innerHTML = mensaje;
+        const mensaje =
+          '<div class="vacio">No hay pilas que coincidan con los filtros.</div>';
+
+        elementos.cuerpoTabla.innerHTML =
+          `<tr><td colspan="9">${mensaje}</td></tr>`;
+
+        elementos.tarjetasMovil.innerHTML =
+          mensaje;
+
         return;
       }
 
-      elementos.cuerpoTabla.innerHTML = filtrados.map(filaEscritorio).join("");
-      elementos.tarjetasMovil.innerHTML = filtrados.map(tarjetaMovil).join("");
+      elementos.cuerpoTabla.innerHTML =
+        filtrados
+          .map(filaEscritorio)
+          .join("");
+
+      elementos.tarjetasMovil.innerHTML =
+        filtrados
+          .map(tarjetaMovil)
+          .join("");
+    }
+
+    function aplicarFiltroKpi(estado) {
+      elementos.buscar.value = "";
+      elementos.filtroPredio.value = "TODOS";
+      elementos.filtroEstado.value = estado;
+
+      renderizar();
     }
 
     async function solicitarCierre(predio, pila) {
       const confirmado = window.confirm(
-        `¿Confirmás cerrar la pila ${pila} del predio ${predio}?\n\n`
-        + "Esta acción modificará el sistema FAS."
+        `¿Confirmás cerrar la pila ${pila} del predio ${predio}?\n\n` +
+        "Esta acción modificará el sistema FAS."
       );
 
-      if (!confirmado) return;
-
-      let pin = sessionStorage.getItem("pin_cierre_pilas") || "";
-      if (!pin) {
-        pin = window.prompt("Ingresá el PIN para autorizar el cierre:") || "";
+      if (!confirmado) {
+        return;
       }
-      if (!pin) return;
+
+      let pin =
+        sessionStorage.getItem("pin_cierre_pilas") || "";
+
+      if (!pin) {
+        pin =
+          window.prompt(
+            "Ingresá el PIN para autorizar el cierre:"
+          ) || "";
+      }
+
+      if (!pin) {
+        return;
+      }
 
       try {
-        const respuesta = await fetch("/api/ordenes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Action-Pin": pin
-          },
-          body: JSON.stringify({ predio, pila })
-        });
-        const contenido = await respuesta.json();
+        const respuesta = await fetch(
+          "/api/ordenes",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Action-Pin": pin
+            },
+            body: JSON.stringify({
+              predio,
+              pila
+            })
+          }
+        );
+
+        const contenido =
+          await respuesta.json();
 
         if (!respuesta.ok) {
           if (respuesta.status === 401) {
-            sessionStorage.removeItem("pin_cierre_pilas");
+            sessionStorage.removeItem(
+              "pin_cierre_pilas"
+            );
           }
-          throw new Error(contenido.error || `HTTP ${respuesta.status}`);
+
+          throw new Error(
+            contenido.error ||
+            `HTTP ${respuesta.status}`
+          );
         }
 
-        sessionStorage.setItem("pin_cierre_pilas", pin);
-        ordenesActivas.set(claveRegistro({ predio, pila }), contenido.orden);
+        sessionStorage.setItem(
+          "pin_cierre_pilas",
+          pin
+        );
+
+        ordenesActivas.set(
+          claveRegistro({ predio, pila }),
+          contenido.orden
+        );
+
         renderizar();
         iniciarSeguimientoOrdenes();
 
       } catch (error) {
-        window.alert(`No se pudo solicitar el cierre: ${error.message}`);
+        window.alert(
+          `No se pudo solicitar el cierre: ${error.message}`
+        );
       }
     }
 
     async function consultarEstado(predio, pila) {
-      const parametros = new URLSearchParams({ predio, pila });
-      const respuesta = await fetch(
-        `/api/ordenes/estado?${parametros.toString()}&t=${Date.now()}`,
-        { cache: "no-store" }
-      );
-      if (!respuesta.ok) return;
-      const contenido = await respuesta.json();
+      const parametros =
+        new URLSearchParams({
+          predio,
+          pila
+        });
+
+      const respuesta =
+        await fetch(
+          `/api/ordenes/estado?${parametros.toString()}&t=${Date.now()}`,
+          {
+            cache: "no-store"
+          }
+        );
+
+      if (!respuesta.ok) {
+        return;
+      }
+
+      const contenido =
+        await respuesta.json();
+
       if (contenido.orden) {
-        ordenesActivas.set(claveRegistro({ predio, pila }), contenido.orden);
+        ordenesActivas.set(
+          claveRegistro({ predio, pila }),
+          contenido.orden
+        );
       }
     }
 
     function iniciarSeguimientoOrdenes() {
-      if (temporizadorOrdenes) return;
+      if (temporizadorOrdenes) {
+        return;
+      }
 
-      temporizadorOrdenes = window.setInterval(async () => {
-        const activas = [...ordenesActivas.values()].filter(
-          orden => ["PENDIENTE", "EJECUTANDO"].includes(orden.estado)
+      temporizadorOrdenes =
+        window.setInterval(
+          async () => {
+            const activas =
+              [...ordenesActivas.values()]
+                .filter(
+                  orden =>
+                    ["PENDIENTE", "EJECUTANDO"]
+                      .includes(orden.estado)
+                );
+
+            if (activas.length === 0) {
+              clearInterval(
+                temporizadorOrdenes
+              );
+
+              temporizadorOrdenes = null;
+              return;
+            }
+
+            await Promise.all(
+              activas.map(
+                orden =>
+                  consultarEstado(
+                    orden.predio,
+                    orden.pila
+                  )
+              )
+            );
+
+            renderizar();
+
+          },
+          5000
         );
-
-        if (activas.length === 0) {
-          clearInterval(temporizadorOrdenes);
-          temporizadorOrdenes = null;
-          return;
-        }
-
-        await Promise.all(
-          activas.map(orden => consultarEstado(orden.predio, orden.pila))
-        );
-        renderizar();
-      }, 5000);
     }
 
     async function cargarDatos() {
-      elementos.mensajeError.classList.remove("visible");
+      elementos.mensajeError.classList.remove(
+        "visible"
+      );
 
       try {
-        const separador = JSON_URL.includes("?") ? "&" : "?";
-        const urlSinCache = `${JSON_URL}${separador}t=${Date.now()}`;
+        const separador =
+          JSON_URL.includes("?")
+            ? "&"
+            : "?";
 
-        const respuesta = await fetch(urlSinCache, {
-          method: "GET",
-          cache: "no-store"
-        });
+        const urlSinCache =
+          `${JSON_URL}${separador}t=${Date.now()}`;
+
+        const respuesta =
+          await fetch(
+            urlSinCache,
+            {
+              method: "GET",
+              cache: "no-store"
+            }
+          );
 
         if (!respuesta.ok) {
-          throw new Error(`HTTP ${respuesta.status}`);
+          throw new Error(
+            `HTTP ${respuesta.status}`
+          );
         }
 
-        const contenido = await respuesta.json();
+        const contenido =
+          await respuesta.json();
 
-        registros = Array.isArray(contenido)
-          ? contenido
-          : Array.isArray(contenido.registros)
-            ? contenido.registros
-            : [];
+        registros =
+          Array.isArray(contenido)
+            ? contenido
+            : Array.isArray(contenido.registros)
+              ? contenido.registros
+              : [];
 
         elementos.actualizado.textContent =
           `Actualizado ${fechaHora(contenido.actualizado)}`;
 
+        prepararColoresPredios();
         actualizarResumen();
         cargarFiltroPredios();
         renderizar();
+
       } catch (error) {
         console.error(error);
 
-        elementos.actualizado.textContent = "No se pudo actualizar";
+        elementos.actualizado.textContent =
+          "No se pudo actualizar";
+
         elementos.mensajeError.textContent =
           `No se pudo leer PilasEnProceso.json. Detalle: ${error.message}`;
-        elementos.mensajeError.classList.add("visible");
+
+        elementos.mensajeError.classList.add(
+          "visible"
+        );
 
         elementos.cuerpoTabla.innerHTML =
           '<tr><td colspan="9" class="vacio">No fue posible cargar los datos.</td></tr>';
+
         elementos.tarjetasMovil.innerHTML =
           '<div class="vacio">No fue posible cargar los datos.</div>';
       }
     }
 
-    elementos.buscar.addEventListener("input", renderizar);
-    elementos.filtroEstado.addEventListener("change", renderizar);
-    elementos.filtroPredio.addEventListener("change", renderizar);
-    document.addEventListener("click", evento => {
-      const boton = evento.target.closest('[data-accion="cerrar-pila"]');
-      if (!boton || boton.disabled) return;
-      solicitarCierre(boton.dataset.predio, boton.dataset.pila);
-    });
+    elementos.buscar.addEventListener(
+      "input",
+      renderizar
+    );
+
+    elementos.filtroEstado.addEventListener(
+      "change",
+      renderizar
+    );
+
+    elementos.filtroPredio.addEventListener(
+      "change",
+      renderizar
+    );
+
+    document
+      .querySelectorAll("[data-filtro-kpi]")
+      .forEach(kpi => {
+
+        kpi.addEventListener(
+          "click",
+          () => {
+            aplicarFiltroKpi(
+              kpi.dataset.filtroKpi
+            );
+          }
+        );
+
+        kpi.addEventListener(
+          "keydown",
+          evento => {
+            if (
+              evento.key === "Enter" ||
+              evento.key === " "
+            ) {
+              evento.preventDefault();
+
+              aplicarFiltroKpi(
+                kpi.dataset.filtroKpi
+              );
+            }
+          }
+        );
+
+      });
+
+    document.addEventListener(
+      "click",
+      evento => {
+        const boton =
+          evento.target.closest(
+            '[data-accion="cerrar-pila"]'
+          );
+
+        if (
+          !boton ||
+          boton.disabled
+        ) {
+          return;
+        }
+
+        solicitarCierre(
+          boton.dataset.predio,
+          boton.dataset.pila
+        );
+      }
+    );
 
     cargarDatos();
   </script>
