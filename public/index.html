@@ -385,6 +385,57 @@
       color: #68736b;
     }
 
+    .accion-celda {
+      min-width: 125px;
+      text-align: center;
+    }
+
+    .btn-cerrar {
+      min-width: 112px;
+      padding: 8px 10px;
+      border: 1px solid #cf9090;
+      border-radius: 9px;
+      background: #fff5f5;
+      color: #8f2929;
+      font-size: 11px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .btn-cerrar:hover {
+      background: #ffe9e9;
+    }
+
+    .btn-cerrar:disabled {
+      border-color: #d6dcd3;
+      background: #f1f3ef;
+      color: #6f7972;
+      cursor: wait;
+    }
+
+    .btn-cerrar.completado {
+      border-color: #add5bd;
+      background: var(--verde-100);
+      color: var(--verde-700);
+      cursor: default;
+    }
+
+    .btn-cerrar.error {
+      border-color: #e5aaaa;
+      background: var(--rojo-fondo);
+      color: var(--rojo);
+      cursor: pointer;
+    }
+
+    .accion-movil {
+      margin-top: 13px;
+    }
+
+    .accion-movil .btn-cerrar {
+      width: 100%;
+      min-height: 42px;
+    }
+
     .pie-tabla {
       display: flex;
       justify-content: space-between;
@@ -653,10 +704,11 @@
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
+              <th style="text-align:center">Acción</th>
             </tr>
           </thead>
           <tbody id="cuerpoTabla">
-            <tr><td colspan="8" class="cargando">Cargando información de pilas…</td></tr>
+            <tr><td colspan="9" class="cargando">Cargando información de pilas…</td></tr>
           </tbody>
         </table>
       </div>
@@ -681,6 +733,8 @@
     const ESTADO_TERMINADA = "QUIZAS TERMINADA";
 
     let registros = [];
+    const ordenesActivas = new Map();
+    let temporizadorOrdenes = null;
 
     const elementos = {
       actualizado: document.getElementById("actualizado"),
@@ -892,6 +946,48 @@
       });
     }
 
+    function claveRegistro(registro) {
+      return `${normalizar(registro.predio)}|${normalizar(registro.pila)}`;
+    }
+
+    function textoBoton(registro) {
+      const orden = ordenesActivas.get(claveRegistro(registro));
+      if (!orden) return "CERRAR PILA";
+      if (orden.estado === "PENDIENTE") return "PENDIENTE";
+      if (orden.estado === "EJECUTANDO") return "EJECUTANDO";
+      if (orden.estado === "COMPLETADO") return "COMPLETADO";
+      if (orden.estado === "ERROR") return "REINTENTAR";
+      return "CERRAR PILA";
+    }
+
+    function claseBoton(registro) {
+      const orden = ordenesActivas.get(claveRegistro(registro));
+      if (!orden) return "";
+      if (orden.estado === "COMPLETADO") return "completado";
+      if (orden.estado === "ERROR") return "error";
+      return "";
+    }
+
+    function botonDeshabilitado(registro) {
+      const orden = ordenesActivas.get(claveRegistro(registro));
+      return orden && ["PENDIENTE", "EJECUTANDO", "COMPLETADO"].includes(orden.estado)
+        ? "disabled"
+        : "";
+    }
+
+    function botonCerrar(registro) {
+      return `
+        <button
+          type="button"
+          class="btn-cerrar ${claseBoton(registro)}"
+          data-accion="cerrar-pila"
+          data-predio="${escapar(registro.predio || "")}"
+          data-pila="${escapar(registro.pila ?? "")}"
+          ${botonDeshabilitado(registro)}
+        >${textoBoton(registro)}</button>
+      `;
+    }
+
     function filaEscritorio(registro) {
       const avance = obtenerAvance(registro);
 
@@ -922,6 +1018,7 @@
           </td>
           <td>${fecha(registro.primera_fecha)}</td>
           <td>${fecha(registro.ultima_fecha)}</td>
+          <td class="accion-celda">${botonCerrar(registro)}</td>
         </tr>
       `;
     }
@@ -971,6 +1068,10 @@
             <span>Primera: <strong>${fecha(registro.primera_fecha)}</strong></span>
             <span>Última: <strong>${fecha(registro.ultima_fecha)}</strong></span>
           </div>
+
+          <div class="accion-movil">
+            ${botonCerrar(registro)}
+          </div>
         </article>
       `;
     }
@@ -983,13 +1084,89 @@
 
       if (filtrados.length === 0) {
         const mensaje = '<div class="vacio">No hay pilas que coincidan con los filtros.</div>';
-        elementos.cuerpoTabla.innerHTML = `<tr><td colspan="8">${mensaje}</td></tr>`;
+        elementos.cuerpoTabla.innerHTML = `<tr><td colspan="9">${mensaje}</td></tr>`;
         elementos.tarjetasMovil.innerHTML = mensaje;
         return;
       }
 
       elementos.cuerpoTabla.innerHTML = filtrados.map(filaEscritorio).join("");
       elementos.tarjetasMovil.innerHTML = filtrados.map(tarjetaMovil).join("");
+    }
+
+    async function solicitarCierre(predio, pila) {
+      const confirmado = window.confirm(
+        `¿Confirmás cerrar la pila ${pila} del predio ${predio}?\n\n`
+        + "Esta acción modificará el sistema FAS."
+      );
+
+      if (!confirmado) return;
+
+      let pin = sessionStorage.getItem("pin_cierre_pilas") || "";
+      if (!pin) {
+        pin = window.prompt("Ingresá el PIN para autorizar el cierre:") || "";
+      }
+      if (!pin) return;
+
+      try {
+        const respuesta = await fetch("/api/ordenes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Action-Pin": pin
+          },
+          body: JSON.stringify({ predio, pila })
+        });
+        const contenido = await respuesta.json();
+
+        if (!respuesta.ok) {
+          if (respuesta.status === 401) {
+            sessionStorage.removeItem("pin_cierre_pilas");
+          }
+          throw new Error(contenido.error || `HTTP ${respuesta.status}`);
+        }
+
+        sessionStorage.setItem("pin_cierre_pilas", pin);
+        ordenesActivas.set(claveRegistro({ predio, pila }), contenido.orden);
+        renderizar();
+        iniciarSeguimientoOrdenes();
+
+      } catch (error) {
+        window.alert(`No se pudo solicitar el cierre: ${error.message}`);
+      }
+    }
+
+    async function consultarEstado(predio, pila) {
+      const parametros = new URLSearchParams({ predio, pila });
+      const respuesta = await fetch(
+        `/api/ordenes/estado?${parametros.toString()}&t=${Date.now()}`,
+        { cache: "no-store" }
+      );
+      if (!respuesta.ok) return;
+      const contenido = await respuesta.json();
+      if (contenido.orden) {
+        ordenesActivas.set(claveRegistro({ predio, pila }), contenido.orden);
+      }
+    }
+
+    function iniciarSeguimientoOrdenes() {
+      if (temporizadorOrdenes) return;
+
+      temporizadorOrdenes = window.setInterval(async () => {
+        const activas = [...ordenesActivas.values()].filter(
+          orden => ["PENDIENTE", "EJECUTANDO"].includes(orden.estado)
+        );
+
+        if (activas.length === 0) {
+          clearInterval(temporizadorOrdenes);
+          temporizadorOrdenes = null;
+          return;
+        }
+
+        await Promise.all(
+          activas.map(orden => consultarEstado(orden.predio, orden.pila))
+        );
+        renderizar();
+      }, 5000);
     }
 
     async function cargarDatos() {
@@ -1031,7 +1208,7 @@
         elementos.mensajeError.classList.add("visible");
 
         elementos.cuerpoTabla.innerHTML =
-          '<tr><td colspan="8" class="vacio">No fue posible cargar los datos.</td></tr>';
+          '<tr><td colspan="9" class="vacio">No fue posible cargar los datos.</td></tr>';
         elementos.tarjetasMovil.innerHTML =
           '<div class="vacio">No fue posible cargar los datos.</div>';
       }
@@ -1040,6 +1217,11 @@
     elementos.buscar.addEventListener("input", renderizar);
     elementos.filtroEstado.addEventListener("change", renderizar);
     elementos.filtroPredio.addEventListener("change", renderizar);
+    document.addEventListener("click", evento => {
+      const boton = evento.target.closest('[data-accion="cerrar-pila"]');
+      if (!boton || boton.disabled) return;
+      solicitarCierre(boton.dataset.predio, boton.dataset.pila);
+    });
 
     cargarDatos();
   </script>
