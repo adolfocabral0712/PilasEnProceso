@@ -139,25 +139,6 @@
       border-radius: 17px;
       background: var(--blanco);
       box-shadow: 0 5px 20px rgba(30, 60, 42, 0.045);
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
-    }
-
-    .kpi:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 9px 24px rgba(30, 60, 42, 0.11);
-    }
-
-    .kpi:focus-visible {
-      outline: 3px solid rgba(51, 134, 95, 0.28);
-      outline-offset: 3px;
-    }
-
-    .kpi.activa {
-      border-color: var(--kpi-color, var(--verde-600));
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--kpi-color, var(--verde-600)) 18%, transparent);
     }
 
     .kpi::after {
@@ -172,10 +153,7 @@
 
     .kpi.verde { --kpi-color: #3a8c63; }
     .kpi.ambar { --kpi-color: #d99228; }
-    .kpi.azul {
-      --kpi-color: #d65454;
-      background: #fff0f0;
-    }
+    .kpi.azul { --kpi-color: #4d87b4; }
     .kpi.oscuro { --kpi-color: var(--verde-900); }
 
     .kpi-etiqueta {
@@ -273,7 +251,7 @@
     td {
       padding: 13px 12px;
       border-bottom: 1px solid #ebeee9;
-      text-align: center;
+      text-align: left;
       vertical-align: middle;
     }
 
@@ -298,29 +276,14 @@
       background: #fafcf9;
     }
 
-    tbody tr.fila-quizas-terminada td {
-      background: #fff0f0;
-    }
-
-    tbody tr.fila-quizas-terminada:hover td {
-      background: #ffe5e5;
-    }
-
     tbody tr:last-child td {
       border-bottom: 0;
     }
 
     .predio {
       max-width: 260px;
+      color: #183b2c;
       font-weight: 800;
-    }
-
-    .predio-color-1 {
-      color: #32cd32;
-    }
-
-    .predio-color-2 {
-      color: #05ad98;
     }
 
     .pila {
@@ -344,7 +307,7 @@
     }
 
     .numero {
-      text-align: center;
+      text-align: right;
       font-variant-numeric: tabular-nums;
       font-weight: 750;
     }
@@ -388,10 +351,6 @@
 
     .barra.roja > span {
       background: linear-gradient(90deg, #df6565, #a93636);
-    }
-
-    .barra.amarilla > span {
-      background: linear-gradient(90deg, #f2c94c, #d99228);
     }
 
     .estado {
@@ -532,27 +491,16 @@
       }
 
       .tarjetas-movil {
-        display: grid;
-        gap: 14px;
-        padding: 14px;
-        background: #edf1eb;
+        display: block;
       }
 
       .tarjeta-pila {
-        padding: 16px;
-        border: 1px solid #d7ded4;
-        border-radius: 15px;
-        background: #ffffff;
-        box-shadow: 0 4px 14px rgba(30, 60, 42, 0.08);
+        padding: 15px;
+        border-bottom: 1px solid #e6eae4;
       }
 
       .tarjeta-pila:last-child {
-        border-bottom: 1px solid #d7ded4;
-      }
-
-      .tarjeta-pila.fila-quizas-terminada {
-        background: #fff0f0;
-        border-color: #edc3c3;
+        border-bottom: 0;
       }
 
       .tarjeta-superior {
@@ -564,6 +512,7 @@
 
       .tarjeta-predio {
         margin: 0;
+        color: #183b2c;
         font-size: 15px;
         font-weight: 850;
       }
@@ -649,19 +598,19 @@
     <div class="mensaje-error" id="mensajeError"></div>
 
     <section class="kpis" aria-label="Resumen">
-      <article class="kpi verde activa" data-estado="TODOS" role="button" tabindex="0" aria-pressed="true">
+      <article class="kpi verde">
         <div class="kpi-etiqueta">Pilas en proceso</div>
         <div class="kpi-valor" id="kpiTotal">0</div>
         <div class="kpi-detalle">Registros activos</div>
       </article>
 
-      <article class="kpi ambar" data-estado="PUEDE POR CARGAR" role="button" tabindex="0" aria-pressed="false">
+      <article class="kpi ambar">
         <div class="kpi-etiqueta">Pueden por cargar</div>
         <div class="kpi-valor" id="kpiPorCargar">0</div>
         <div class="kpi-detalle">Aún debajo de la estimación</div>
       </article>
 
-      <article class="kpi azul" data-estado="QUIZAS TERMINADA" role="button" tabindex="0" aria-pressed="false">
+      <article class="kpi azul">
         <div class="kpi-etiqueta">Quizás terminadas</div>
         <div class="kpi-valor" id="kpiTerminadas">0</div>
         <div class="kpi-detalle">Alcanzaron la estimación</div>
@@ -697,10 +646,10 @@
           <thead>
             <tr>
               <th>Predio</th>
-              <th>Pila</th>
+              <th style="text-align:center">Pila</th>
               <th>Producto / Cosecha</th>
               <th>Estado</th>
-              <th>M³ × 1,15</th>
+              <th style="text-align:right">M³ × 1,15</th>
               <th>Salidos / A cargar</th>
               <th>Primera fecha</th>
               <th>Última fecha</th>
@@ -746,8 +695,6 @@
       tarjetasMovil: document.getElementById("tarjetasMovil"),
       cantidadVisible: document.getElementById("cantidadVisible")
     };
-
-    const tarjetasKpi = [...document.querySelectorAll(".kpi[data-estado]")];
 
     function escapar(valor) {
       return String(valor ?? "")
@@ -814,17 +761,13 @@
       return normalizar(registro.estado_pila);
     }
 
-    function obtenerPorcentajeReal(registro) {
+    function obtenerAvance(registro) {
       const salidos = Number(registro.remitos_ingresados ?? 0);
       const estimados = Number(registro.remitos_estimados ?? 0);
 
       if (!estimados || estimados <= 0) return 0;
 
-      return Math.max(0, Math.round((salidos / estimados) * 100));
-    }
-
-    function obtenerAvance(registro) {
-      return Math.min(100, obtenerPorcentajeReal(registro));
+      return Math.min(100, Math.max(0, Math.round((salidos / estimados) * 100)));
     }
 
     function obtenerM3Ajustado(registro) {
@@ -851,11 +794,9 @@
     }
 
     function claseBarra(registro) {
-      const porcentaje = obtenerPorcentajeReal(registro);
-
-      if (porcentaje > 100) return "barra roja";
-      if (porcentaje > 80) return "barra amarilla";
-      return "barra";
+      return obtenerEstado(registro) === ESTADO_TERMINADA
+        ? "barra roja"
+        : "barra";
     }
 
     function textoEstado(registro) {
@@ -951,28 +892,12 @@
       });
     }
 
-    function claseColorPredio(registro) {
-      const nombrePredio = String(registro.predio ?? "").trim();
-
-      const prediosOrdenados = [...new Set(
-        registros
-          .map(item => String(item.predio ?? "").trim())
-          .filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b, "es"));
-
-      const posicion = prediosOrdenados.indexOf(nombrePredio);
-      return posicion >= 0 && posicion % 2 === 1
-        ? "predio-color-2"
-        : "predio-color-1";
-    }
-
     function filaEscritorio(registro) {
       const avance = obtenerAvance(registro);
-      const porcentajeReal = obtenerPorcentajeReal(registro);
 
       return `
-        <tr class="${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
-          <td class="predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</td>
+        <tr>
+          <td class="predio">${escapar(registro.predio || "Sin predio")}</td>
           <td class="pila">${escapar(registro.pila ?? "—")}</td>
           <td class="producto">
             ${escapar(registro.producto || "—")}
@@ -989,9 +914,9 @@
               <span class="avance-valores">
                 ${numero(registro.remitos_ingresados)} / ${numero(registro.remitos_estimados)}
               </span>
-              <span class="avance-porcentaje">${porcentajeReal}%</span>
+              <span class="avance-porcentaje">${avance}%</span>
             </div>
-            <div class="${claseBarra(registro)}" aria-label="Avance ${porcentajeReal}%">
+            <div class="${claseBarra(registro)}" aria-label="Avance ${avance}%">
               <span style="width:${avance}%"></span>
             </div>
           </td>
@@ -1003,13 +928,12 @@
 
     function tarjetaMovil(registro) {
       const avance = obtenerAvance(registro);
-      const porcentajeReal = obtenerPorcentajeReal(registro);
 
       return `
-        <article class="tarjeta-pila ${obtenerEstado(registro) === ESTADO_TERMINADA ? "fila-quizas-terminada" : ""}">
+        <article class="tarjeta-pila">
           <div class="tarjeta-superior">
             <div>
-              <h2 class="tarjeta-predio ${claseColorPredio(registro)}">${escapar(registro.predio || "Sin predio")}</h2>
+              <h2 class="tarjeta-predio">${escapar(registro.predio || "Sin predio")}</h2>
               <div class="tarjeta-pila-numero">Pila ${escapar(registro.pila ?? "—")}</div>
             </div>
             <span class="estado ${claseEstado(registro)}">${textoEstado(registro)}</span>
@@ -1038,7 +962,7 @@
           <div class="tarjeta-avance">
             <div class="avance-cabecera">
               <span class="avance-valores">Avance estimado</span>
-              <span class="avance-porcentaje">${porcentajeReal}%</span>
+              <span class="avance-porcentaje">${avance}%</span>
             </div>
             <div class="${claseBarra(registro)}"><span style="width:${avance}%"></span></div>
           </div>
@@ -1066,22 +990,6 @@
 
       elementos.cuerpoTabla.innerHTML = filtrados.map(filaEscritorio).join("");
       elementos.tarjetasMovil.innerHTML = filtrados.map(tarjetaMovil).join("");
-    }
-
-    function marcarKpiActivo(estado) {
-      tarjetasKpi.forEach(tarjeta => {
-        const activa = tarjeta.dataset.estado === estado;
-        tarjeta.classList.toggle("activa", activa);
-        tarjeta.setAttribute("aria-pressed", activa ? "true" : "false");
-      });
-    }
-
-    function filtrarDesdeKpi(estado) {
-      elementos.buscar.value = "";
-      elementos.filtroPredio.value = "TODOS";
-      elementos.filtroEstado.value = estado;
-      marcarKpiActivo(estado);
-      renderizar();
     }
 
     async function cargarDatos() {
@@ -1130,21 +1038,8 @@
     }
 
     elementos.buscar.addEventListener("input", renderizar);
-    elementos.filtroEstado.addEventListener("change", () => {
-      marcarKpiActivo(elementos.filtroEstado.value);
-      renderizar();
-    });
+    elementos.filtroEstado.addEventListener("change", renderizar);
     elementos.filtroPredio.addEventListener("change", renderizar);
-
-    tarjetasKpi.forEach(tarjeta => {
-      tarjeta.addEventListener("click", () => filtrarDesdeKpi(tarjeta.dataset.estado));
-      tarjeta.addEventListener("keydown", evento => {
-        if (evento.key === "Enter" || evento.key === " ") {
-          evento.preventDefault();
-          filtrarDesdeKpi(tarjeta.dataset.estado);
-        }
-      });
-    });
 
     cargarDatos();
   </script>
