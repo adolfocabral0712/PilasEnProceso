@@ -13,7 +13,7 @@
       {
         "name": "COLA_PILAS",
         "class_name": "ColaPilas"
-      }
+      
     ]
   },
   "migrations": [
