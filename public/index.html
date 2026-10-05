@@ -789,6 +789,21 @@
         font-size: 10px;
       }
     }
+
+    .panel-registros { margin-top: 22px; }
+    .registros-titulo { margin: 0; padding: 18px 15px 0; font-size: 21px; color: var(--verde-900); }
+    .registros-controles { display: grid; grid-template-columns: 1fr 220px auto; gap: 12px; padding: 15px; }
+    .registros-controles input { padding: 0 12px; }
+    .registros-boton { border: 1px solid var(--borde); border-radius: 9px; padding: 9px 14px; background: var(--verde-100); color: var(--verde-900); cursor: pointer; }
+    .registros-boton:disabled { opacity: .5; cursor: default; }
+    .registros-scroll { display: block; overflow: auto; max-height: 600px; }
+    #tablaRegistros { min-width: 100%; width: max-content; }
+    #tablaRegistros td { max-width: 280px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    #tablaRegistros th { white-space: normal; min-width: 100px; max-width: 240px; }
+    .registros-orden { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+    .registros-pie { align-items: center; flex-wrap: wrap; }
+    #errorRegistros { margin: 0 15px 15px; }
+    @media(max-width: 700px) { .registros-controles { grid-template-columns: 1fr; } }
   </style>
 </head>
 
@@ -919,6 +934,24 @@
         <span>Volumen × 1,15 / capacidad</span>
       </footer>
 
+    </section>
+
+    <section class="panel panel-registros" aria-labelledby="tituloRegistros">
+      <h2 class="registros-titulo" id="tituloRegistros">Registros</h2>
+      <div class="registros-controles">
+        <input id="buscarRegistros" class="control" type="search" placeholder="Buscar en los registros" aria-label="Buscar en los registros">
+        <select id="hojaRegistros" class="control" aria-label="Hoja del Excel" disabled><option>Cargando hojas…</option></select>
+        <button id="actualizarRegistros" class="registros-boton" type="button">Actualizar registros</button>
+      </div>
+      <div id="errorRegistros" class="mensaje-error" role="alert"></div>
+      <div class="registros-scroll">
+        <table id="tablaRegistros"><thead id="encabezadoRegistros"></thead><tbody id="cuerpoRegistros"><tr><td class="cargando">Cargando registros…</td></tr></tbody></table>
+      </div>
+      <footer class="pie-tabla registros-pie">
+        <span id="cantidadRegistros" aria-live="polite">Cargando…</span>
+        <span id="fechaRegistros"></span>
+        <div><button id="anteriorRegistros" class="registros-boton" disabled type="button">Anterior</button> <button id="siguienteRegistros" class="registros-boton" disabled type="button">Siguiente</button></div>
+      </footer>
     </section>
   </main>
 
@@ -1844,6 +1877,124 @@
     );
 
     cargarDatos();
+  </script>
+
+  <script>
+  (() => {
+    "use strict";
+    const porPagina = 100;
+    const ids = ["buscarRegistros", "hojaRegistros", "actualizarRegistros", "errorRegistros", "encabezadoRegistros", "cuerpoRegistros", "cantidadRegistros", "fechaRegistros", "anteriorRegistros", "siguienteRegistros"];
+    const ui = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+    let libro = null, columnas = [], filas = [], pagina = 0, orden = -1, sentido = 1, ocupado = false;
+    let libreria;
+    const normalizarTexto = valor => String(valor ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const comparar = new Intl.Collator("es", { numeric: true, sensitivity: "base" });
+    function cargarLibreria() {
+      if (window.XLSX) return Promise.resolve(window.XLSX);
+      if (!libreria) libreria = new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+        const timer = setTimeout(() => { script.remove(); reject(new Error("Se agotó el tiempo al cargar el lector de Excel.")); }, 30000);
+        script.onload = () => { clearTimeout(timer); window.XLSX ? resolve(window.XLSX) : reject(new Error("El lector de Excel no está disponible.")); };
+        script.onerror = () => { clearTimeout(timer); script.remove(); reject(new Error("No se pudo cargar el lector de Excel. Revisá la conexión.")); };
+        document.head.appendChild(script);
+      }).catch(error => { libreria = null; throw error; });
+      return libreria;
+    }
+    function renderizarExcel() {
+      const consulta = normalizarTexto(ui.buscarRegistros.value.trim());
+      let visibles = filas.filter(fila => !consulta || fila.some(celda => normalizarTexto(celda).includes(consulta)));
+      if (orden >= 0) visibles.sort((a, b) => sentido * comparar.compare(String(a[orden] ?? ""), String(b[orden] ?? "")));
+      const paginas = Math.max(1, Math.ceil(visibles.length / porPagina));
+      pagina = Math.min(pagina, paginas - 1);
+      ui.encabezadoRegistros.replaceChildren();
+      if (columnas.length) {
+        const tr = document.createElement("tr");
+        columnas.forEach((nombre, indice) => {
+          const th = document.createElement("th"); th.scope = "col";
+          if (orden === indice) th.setAttribute("aria-sort", sentido === 1 ? "ascending" : "descending");
+          const boton = document.createElement("button"); boton.type = "button"; boton.className = "registros-orden";
+          boton.textContent = nombre + (orden === indice ? (sentido === 1 ? " ▲" : " ▼") : "");
+          boton.addEventListener("click", () => { sentido = orden === indice ? -sentido : 1; orden = indice; pagina = 0; renderizarExcel(); });
+          th.appendChild(boton); tr.appendChild(th);
+        });
+        ui.encabezadoRegistros.appendChild(tr);
+      }
+      const fragmento = document.createDocumentFragment();
+      visibles.slice(pagina * porPagina, (pagina + 1) * porPagina).forEach(fila => {
+        const tr = document.createElement("tr");
+        columnas.forEach((_, i) => { const td = document.createElement("td"); td.textContent = fila[i] ?? ""; tr.appendChild(td); });
+        fragmento.appendChild(tr);
+      });
+      if (!visibles.length) {
+        const tr = document.createElement("tr"), td = document.createElement("td");
+        td.colSpan = Math.max(1, columnas.length); td.className = "vacio";
+        td.textContent = filas.length ? "Sin registros para esta búsqueda." : "Esta hoja no contiene registros.";
+        tr.appendChild(td); fragmento.appendChild(tr);
+      }
+      ui.cuerpoRegistros.replaceChildren(fragmento);
+      const inicio = visibles.length ? pagina * porPagina + 1 : 0;
+      ui.cantidadRegistros.textContent = `${inicio}–${Math.min((pagina + 1) * porPagina, visibles.length)} de ${visibles.length.toLocaleString("es-UY")} registros · Página ${pagina + 1} de ${paginas}`;
+      ui.anteriorRegistros.disabled = ocupado || pagina === 0;
+      ui.siguienteRegistros.disabled = ocupado || pagina >= paginas - 1;
+    }
+    function seleccionarHoja() {
+      const hoja = libro.Sheets[ui.hojaRegistros.value];
+      const matriz = window.XLSX.utils.sheet_to_json(hoja, { header: 1, raw: false, defval: "", blankrows: false });
+      const primera = matriz.findIndex(fila => fila.some(valor => String(valor ?? "").trim() !== ""));
+      if (primera < 0) { columnas = []; filas = []; }
+      else {
+        const contenido = matriz.slice(primera);
+        const ancho = contenido.reduce((total, fila) => Math.max(total, fila.length), 0);
+        columnas = Array.from({ length: ancho }, (_, i) => String(contenido[0][i] ?? "").trim() || `Columna ${i + 1}`);
+        filas = contenido.slice(1).filter(fila => fila.some(valor => String(valor ?? "").trim() !== ""));
+      }
+      pagina = 0; orden = -1; sentido = 1; renderizarExcel();
+    }
+    async function cargarExcel() {
+      if (ocupado) return;
+      ocupado = true; ui.actualizarRegistros.disabled = true;
+      ui.hojaRegistros.disabled = true;
+      ui.anteriorRegistros.disabled = true; ui.siguienteRegistros.disabled = true;
+      ui.actualizarRegistros.textContent = "Actualizando…";
+      ui.errorRegistros.classList.remove("visible");
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 45000);
+      try {
+        const XLSX = await cargarLibreria();
+        const respuesta = await fetch(`/api/registros?t=${Date.now()}`, { cache: "no-store", signal: controller.signal });
+        if (!respuesta.ok) {
+          const error = await respuesta.json().catch(() => ({}));
+          throw new Error(error.error || `No se pudo leer el Excel (HTTP ${respuesta.status}).`);
+        }
+        const datos = await respuesta.arrayBuffer();
+        if (datos.byteLength < 4 || new Uint8Array(datos)[0] !== 0x50 || new Uint8Array(datos)[1] !== 0x4b) throw new Error("El origen no devolvió un archivo XLSX válido.");
+        const nuevoLibro = XLSX.read(datos, { type: "array", cellDates: false });
+        if (!nuevoLibro.SheetNames.length) throw new Error("El Excel no contiene hojas.");
+        const hojaAnterior = ui.hojaRegistros.value;
+        libro = nuevoLibro;
+        ui.hojaRegistros.replaceChildren(...libro.SheetNames.map(nombre => { const opcion = document.createElement("option"); opcion.value = nombre; opcion.textContent = nombre; return opcion; }));
+        if (libro.SheetNames.includes(hojaAnterior)) ui.hojaRegistros.value = hojaAnterior;
+        seleccionarHoja();
+        ui.fechaRegistros.textContent = "Consultado " + new Date().toLocaleString("es-UY", { timeZone: "America/Montevideo" });
+      } catch (error) {
+        ui.errorRegistros.textContent = error.name === "AbortError" ? "Se agotó el tiempo de lectura del Excel. Podés volver a actualizar." : error.message;
+        ui.errorRegistros.classList.add("visible");
+        if (!libro) { ui.cuerpoRegistros.replaceChildren(); ui.cantidadRegistros.textContent = "No se pudieron cargar los registros."; }
+      } finally {
+        clearTimeout(timer); ocupado = false;
+        ui.actualizarRegistros.disabled = false; ui.actualizarRegistros.textContent = "Actualizar registros";
+        ui.hojaRegistros.disabled = !libro;
+        if (libro) renderizarExcel();
+      }
+    }
+    ui.buscarRegistros.addEventListener("input", () => { pagina = 0; if (libro) renderizarExcel(); });
+    ui.hojaRegistros.addEventListener("change", seleccionarHoja);
+    ui.actualizarRegistros.addEventListener("click", cargarExcel);
+    ui.anteriorRegistros.addEventListener("click", () => { pagina--; renderizarExcel(); });
+    ui.siguienteRegistros.addEventListener("click", () => { pagina++; renderizarExcel(); });
+    cargarExcel();
+  })();
   </script>
 </body>
 </html>
