@@ -792,7 +792,7 @@
       }
     }
 
-    .panel-registros { margin-top: 22px; }
+    .panel-registros { margin-top: 0; margin-bottom: 22px; }
     .registros-titulo { margin: 0; padding: 18px 15px 0; font-size: 21px; color: var(--verde-900); }
     .registros-controles { display: grid; grid-template-columns: 1fr 220px auto; gap: 12px; padding: 15px; }
     .registros-controles input { padding: 0 12px; }
@@ -861,6 +861,24 @@
         <div class="kpi-detalle">Alcanzaron la estimación</div>
       </article>
 
+    </section>
+
+    <section class="panel panel-registros" aria-labelledby="tituloRegistros">
+      <h2 class="registros-titulo" id="tituloRegistros">Registros</h2>
+      <div class="registros-controles">
+        <input id="buscarRegistros" class="control" type="search" placeholder="Buscar en los registros" aria-label="Buscar en los registros">
+        <select id="hojaRegistros" class="control" aria-label="Hoja del Excel" disabled><option>Cargando hojas…</option></select>
+        <button id="actualizarRegistros" class="registros-boton" type="button">Actualizar registros</button>
+      </div>
+      <div id="errorRegistros" class="mensaje-error" role="alert"></div>
+      <div class="registros-scroll">
+        <table id="tablaRegistros"><thead id="encabezadoRegistros"></thead><tbody id="cuerpoRegistros"><tr><td class="cargando">Cargando registros…</td></tr></tbody></table>
+      </div>
+      <footer class="pie-tabla registros-pie">
+        <span id="cantidadRegistros" aria-live="polite">Cargando…</span>
+        <span id="fechaRegistros"></span>
+        <div><button id="anteriorRegistros" class="registros-boton" disabled type="button">Anterior</button> <button id="siguienteRegistros" class="registros-boton" disabled type="button">Siguiente</button></div>
+      </footer>
     </section>
 
     <section class="panel">
@@ -938,23 +956,7 @@
 
     </section>
 
-    <section class="panel panel-registros" aria-labelledby="tituloRegistros">
-      <h2 class="registros-titulo" id="tituloRegistros">Registros</h2>
-      <div class="registros-controles">
-        <input id="buscarRegistros" class="control" type="search" placeholder="Buscar en los registros" aria-label="Buscar en los registros">
-        <select id="hojaRegistros" class="control" aria-label="Hoja del Excel" disabled><option>Cargando hojas…</option></select>
-        <button id="actualizarRegistros" class="registros-boton" type="button">Actualizar registros</button>
-      </div>
-      <div id="errorRegistros" class="mensaje-error" role="alert"></div>
-      <div class="registros-scroll">
-        <table id="tablaRegistros"><thead id="encabezadoRegistros"></thead><tbody id="cuerpoRegistros"><tr><td class="cargando">Cargando registros…</td></tr></tbody></table>
-      </div>
-      <footer class="pie-tabla registros-pie">
-        <span id="cantidadRegistros" aria-live="polite">Cargando…</span>
-        <span id="fechaRegistros"></span>
-        <div><button id="anteriorRegistros" class="registros-boton" disabled type="button">Anterior</button> <button id="siguienteRegistros" class="registros-boton" disabled type="button">Siguiente</button></div>
-      </footer>
-    </section>
+
   </main>
 
   <script>
