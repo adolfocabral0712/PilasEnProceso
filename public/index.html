@@ -806,6 +806,26 @@
     .registros-pie { align-items: center; flex-wrap: wrap; }
     #errorRegistros { margin: 0 15px 15px; }
     @media(max-width: 700px) { .registros-controles { grid-template-columns: 1fr; } }
+
+    .panel-cierre-manual { margin-bottom: 22px; }
+    .cierre-manual-titulo { margin: 0; padding: 18px 18px 0; color: var(--verde-900); font-size: 20px; }
+    .cierre-manual-ayuda { margin: 8px 18px 0; color: var(--texto-suave); font-size: 13px; line-height: 1.5; }
+    .cierre-manual-form { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; padding: 16px 18px; }
+    .cierre-manual-campo label { display: block; margin-bottom: 7px; color: var(--texto-suave); font-size: 12px; font-weight: 800; }
+    .cierre-manual-campo input.control { padding: 0 12px; }
+    .cierre-manual-form .btn-cerrar { min-height: 42px; }
+    .cierre-manual-mensaje { margin: 0 18px 16px; color: var(--texto-suave); font-size: 13px; }
+    .cierre-manual-lista { display: grid; gap: 9px; padding: 0 18px 18px; }
+    .cierre-manual-lista:empty { display: none; }
+    .cierre-manual-orden { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; border: 1px solid var(--borde); border-radius: 10px; padding: 12px; background: #fafbf9; }
+    .cierre-manual-orden strong { overflow-wrap: anywhere; }
+    .cierre-manual-detalle { grid-column: 1 / -1; margin: 0; color: var(--texto-suave); font-size: 12px; overflow-wrap: anywhere; }
+    @media (max-width: 700px) {
+      .cierre-manual-form { grid-template-columns: 1fr; }
+      .cierre-manual-form .btn-cerrar { width: 100%; }
+      .cierre-manual-orden { grid-template-columns: 1fr; }
+      .cierre-manual-orden .estado { justify-self: start; }
+    }
   </style>
 </head>
 
@@ -879,6 +899,25 @@
         <span id="fechaRegistros"></span>
         <div><button id="anteriorRegistros" class="registros-boton" disabled type="button">Anterior</button> <button id="siguienteRegistros" class="registros-boton" disabled type="button">Siguiente</button></div>
       </footer>
+    </section>
+
+    <section class="panel panel-cierre-manual" aria-labelledby="tituloCierreManual">
+      <h2 id="tituloCierreManual" class="cierre-manual-titulo">Cierre manual de pila</h2>
+      <p class="cierre-manual-ayuda">Ingresá el predio y la pila para solicitar su cierre, aunque todavía no aparezca en las tablas. Escribí el nombre del predio tal como figura en FAS.</p>
+      <form id="formCierreManual" class="cierre-manual-form">
+        <div class="cierre-manual-campo">
+          <label for="predioCierreManual">Predio</label>
+          <input id="predioCierreManual" name="predio" class="control" type="text" list="prediosCierreManual" placeholder="Nombre del predio en FAS" maxlength="150" required autocomplete="off">
+          <datalist id="prediosCierreManual"></datalist>
+        </div>
+        <div class="cierre-manual-campo">
+          <label for="pilaCierreManual">Pila</label>
+          <input id="pilaCierreManual" name="pila" class="control" type="text" placeholder="Número o código de pila" maxlength="40" required autocomplete="off">
+        </div>
+        <button id="btnCierreManual" class="btn-cerrar" type="submit">CERRAR PILA</button>
+      </form>
+      <p id="mensajeCierreManual" class="cierre-manual-mensaje" role="status" aria-live="polite">La PC que ejecuta el agente debe estar encendida. El cierre se procesará cuando el agente tome la orden.</p>
+      <div id="ordenesCierreManual" class="cierre-manual-lista" aria-live="polite"></div>
     </section>
 
     <section class="panel">
@@ -971,6 +1010,7 @@
     let mapaColoresPredios = new Map();
 
     const ordenesActivas = new Map();
+    const cierresManuales = new Set();
     let temporizadorOrdenes = null;
 
     const elementos = {
@@ -1235,6 +1275,14 @@
 
       elementos.filtroPredio.value =
         sigueExistiendo ? valorActual : "TODOS";
+
+      document.getElementById("prediosCierreManual").replaceChildren(
+        ...predios.map(predio => {
+          const opcion = document.createElement("option");
+          opcion.value = predio;
+          return opcion;
+        })
+      );
     }
 
     function filtrarRegistros() {
@@ -1556,6 +1604,7 @@
     }
 
     function renderizar() {
+      renderizarCierresManuales();
       const filtrados =
         ordenarRegistros(filtrarRegistros());
 
@@ -1664,6 +1713,7 @@
 
         renderizar();
         iniciarSeguimientoOrdenes();
+        return contenido.orden;
 
       } catch (error) {
         window.alert(
@@ -1811,6 +1861,81 @@
           '<div class="vacio">No fue posible cargar los datos.</div>';
       }
     }
+
+
+    function renderizarCierresManuales() {
+      const lista = document.getElementById("ordenesCierreManual");
+      lista.replaceChildren();
+      [...cierresManuales].reverse().forEach(clave => {
+        const orden = ordenesActivas.get(clave);
+        if (!orden) return;
+        const tarjeta = document.createElement("article");
+        tarjeta.className = "cierre-manual-orden";
+        const titulo = document.createElement("strong");
+        titulo.textContent = `${orden.predio} · Pila ${orden.pila}`;
+        const estado = document.createElement("span");
+        estado.className = "estado " + (
+          orden.estado === "COMPLETADO" ? "cargar" :
+          orden.estado === "ERROR" ? "terminada" : "sin-calculo"
+        );
+        estado.textContent = orden.estado || "PENDIENTE";
+        const detalle = document.createElement("p");
+        detalle.className = "cierre-manual-detalle";
+        const explicaciones = {
+          PENDIENTE: "Orden en cola. Esperando que la PC tome la solicitud.",
+          EJECUTANDO: "La PC está procesando el cierre en FAS.",
+          COMPLETADO: "El agente informó que finalizó el cierre.",
+          ERROR: "El agente informó un error. Revisá el detalle antes de volver a solicitar el cierre."
+        };
+        detalle.textContent = orden.detalle || explicaciones[orden.estado] || "";
+        tarjeta.append(titulo, estado, detalle);
+        lista.appendChild(tarjeta);
+      });
+    }
+
+    document.getElementById("formCierreManual").addEventListener("submit", async evento => {
+      evento.preventDefault();
+      const formulario = evento.currentTarget;
+      const entradaPredio = document.getElementById("predioCierreManual");
+      const entradaPila = document.getElementById("pilaCierreManual");
+      const boton = document.getElementById("btnCierreManual");
+      const mensaje = document.getElementById("mensajeCierreManual");
+      const predio = entradaPredio.value.trim();
+      const pila = entradaPila.value.trim();
+      entradaPredio.setCustomValidity(predio ? "" : "Ingresá el predio.");
+      entradaPila.setCustomValidity(pila ? "" : "Ingresá la pila.");
+      if (!formulario.reportValidity() || boton.disabled) return;
+      const clave = claveRegistro({ predio, pila });
+      const existente = ordenesActivas.get(clave);
+      if (existente && ["PENDIENTE", "EJECUTANDO", "COMPLETADO"].includes(existente.estado)) {
+        cierresManuales.add(clave);
+        renderizarCierresManuales();
+        mensaje.textContent = `Ya existe una orden ${existente.estado} para ${predio} · Pila ${pila}.`;
+        return;
+      }
+      boton.disabled = true;
+      boton.textContent = "ENVIANDO…";
+      mensaje.textContent = "Esperando confirmación y envío de la solicitud…";
+      try {
+        const orden = await solicitarCierre(predio, pila);
+        if (!orden) {
+          mensaje.textContent = "No se envió una nueva solicitud. Si apareció un error, revisalo antes de reintentar.";
+          return;
+        }
+        cierresManuales.add(clave);
+        renderizarCierresManuales();
+        mensaje.textContent = `Solicitud registrada para ${predio} · Pila ${pila}. El estado se consulta cada 5 segundos mientras esté pendiente o en ejecución.`;
+      } catch (error) {
+        mensaje.textContent = `No se pudo registrar la solicitud: ${error.message}`;
+      } finally {
+        boton.disabled = false;
+        boton.textContent = "CERRAR PILA";
+      }
+    });
+
+    ["predioCierreManual", "pilaCierreManual"].forEach(id => {
+      document.getElementById(id).addEventListener("input", evento => evento.target.setCustomValidity(""));
+    });
 
     elementos.buscar.addEventListener(
       "input",
